@@ -8,7 +8,36 @@
     top: 10px;
     right: 10px;
     z-index: 1000;
-    background: white;
+    background: rgba(255, 255, 255, 0.8);
     padding: 10px;
-    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Стили для кнопок */
+.controls button {
+    display: block;
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px 12px;
+    background: #4a6ea9;
+    color: white;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* Адаптация для мобилок */
+@media (max-width: 768px) {
+    .controls {
+        left: 10px;
+        right: auto;
+        width: 120px;
+    }
+    
+    .controls button {
+        padding: 6px 8px;
+        font-size: 12px;
+    }
 }
