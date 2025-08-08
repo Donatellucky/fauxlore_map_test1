@@ -57,3 +57,23 @@
         display: block;
     }
 }
+
+.tabs {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    display: flex;
+}
+
+.tab-btn {
+    padding: 8px 12px;
+    background: #f0f0f0;
+    border: none;
+    cursor: pointer;
+}
+
+.tab-btn.active {
+    background: #4a6ea9;
+    color: white;
+}
