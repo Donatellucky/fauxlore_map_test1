@@ -31,3 +31,16 @@ function showLayer(layerName) {
 // Добавляем маркер (пример)
 L.marker([mapHeight * 0.5, mapWidth * 0.5]).addTo(map)
     .bindPopup("Столица");
+
+// Переключение меню слоёв
+function toggleLayerMenu() {
+    const menu = document.getElementById("layerMenu");
+    menu.style.display = menu.style.display === "block" ? "none" : "block";
+}
+
+// Закрытие меню при клике вне его
+document.addEventListener("click", (e) => {
+    if (!e.target.closest(".controls")) {
+        document.getElementById("layerMenu").style.display = "none";
+    }
+});
