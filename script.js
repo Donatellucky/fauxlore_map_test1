@@ -44,3 +44,13 @@ document.addEventListener("click", (e) => {
         document.getElementById("layerMenu").style.display = "none";
     }
 });
+
+document.querySelectorAll(".tab-btn").forEach(btn => {
+    btn.classList.remove("active");
+    if (btn.textContent.includes(layerName)) btn.classList.add("active");
+});
+
+// Отключаем масштабирование карты при касании кнопок
+document.querySelectorAll(".controls button").forEach(btn => {
+    btn.addEventListener("touchstart", (e) => e.stopPropagation());
+});
