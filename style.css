@@ -41,3 +41,19 @@
         font-size: 12px;
     }
 }
+
+.layer-menu {
+    display: none;
+    margin-top: 5px;
+}
+
+.layer-menu button {
+    text-align: left;
+}
+
+/* Показываем меню при наведении (для десктопа) */
+@media (min-width: 769px) {
+    .controls:hover .layer-menu {
+        display: block;
+    }
+}
