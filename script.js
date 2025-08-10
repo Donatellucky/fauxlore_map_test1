@@ -1,50 +1,47 @@
-// Объект для хранения состояния карты
-const app = {
+// Объект для управления картой
+const MapManager = {
     map: null,
     mapWidth: 2300,
     mapHeight: 1500,
     
     init: function() {
-        // Инициализация карты
+        this.setupMap();
+        this.setupLayers();
+        this.setupMarkers();
+        this.setupEventListeners();
+    },
+    
+    setupMap: function() {
         this.map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -2,
             maxZoom: 5,
             zoomControl: false
         });
-
+    },
+    
+    setupLayers: function() {
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
         
-        // Слои карты
         this.layers = {
             political: L.imageOverlay('img/newfauxpolit.png', bounds),
             geographic: L.imageOverlay('img/newfaux.png', bounds),
             resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds)
         };
-
-        // Группы маркеров
+        
+        this.layers.political.addTo(this.map);
+        this.map.fitBounds(bounds);
+    },
+    
+    setupMarkers: function() {
         this.markerGroups = {
             capitals: L.layerGroup(),
             cities: L.layerGroup(),
             fortresses: L.layerGroup(),
             ports: L.layerGroup()
         };
-
-        // Показываем политическую карту по умолчанию
-        this.layers.political.addTo(this.map);
-        this.map.fitBounds(bounds);
         
         // Добавляем тестовые маркеры
-        this.addTestMarkers();
-        
-        // Активируем все маркеры по умолчанию
-        Object.values(this.markerGroups).forEach(group => group.addTo(this.map));
-        
-        // Инициализируем обработчики
-        this.initEventListeners();
-    },
-    
-    addTestMarkers: function() {
         const centerY = this.mapHeight/2;
         const centerX = this.mapWidth/2;
         
@@ -55,60 +52,43 @@ const app = {
         L.marker([centerY*1.2, centerX*0.8], {
             icon: L.divIcon({ html: '⛵', className: 'port-icon' })
         }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
+        
+        // Активируем все маркеры
+        Object.values(this.markerGroups).forEach(group => group.addTo(this.map));
     },
     
-    initEventListeners: function() {
-        // Обработчики для кнопок
-        document.querySelectorAll('.control-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const targetId = e.target.getAttribute('data-target');
-                this.toggleControl(targetId);
-            });
-        });
+    setupEventListeners: function() {
+        // Меню слоев
+        document.getElementById('menuBtn').addEventListener('click', () => this.togglePanel('mainMenu'));
+        document.getElementById('politicalBtn').addEventListener('click', () => this.showLayer('political'));
+        document.getElementById('geographicBtn').addEventListener('click', () => this.showLayer('geographic'));
+        document.getElementById('resourcesBtn').addEventListener('click', () => this.showLayer('resources'));
         
-        // Обработчики для слоев
-        document.querySelectorAll('[data-layer]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const layerName = e.target.getAttribute('data-layer');
-                this.showLayer(layerName);
-            });
-        });
+        // Маркеры
+        document.getElementById('markersBtn').addEventListener('click', () => this.togglePanel('markersMenu'));
+        document.getElementById('toggleCapitals').addEventListener('change', (e) => this.toggleMarkers('capitals', e.target.checked));
+        document.getElementById('toggleCities').addEventListener('change', (e) => this.toggleMarkers('cities', e.target.checked));
+        document.getElementById('toggleFortresses').addEventListener('change', (e) => this.toggleMarkers('fortresses', e.target.checked));
+        document.getElementById('togglePorts').addEventListener('change', (e) => this.toggleMarkers('ports', e.target.checked));
         
-        // Обработчики для маркеров
-        document.querySelectorAll('[data-markers]').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-                const markerType = e.target.getAttribute('data-markers');
-                this.toggleMarkers(markerType);
-            });
-        });
+        // Поиск
+        document.getElementById('searchBtn').addEventListener('click', () => this.togglePanel('searchPanel'));
+        document.getElementById('executeSearch').addEventListener('click', () => this.searchMarker());
         
-        // Обработчик поиска
-        document.getElementById('searchBtn').addEventListener('click', () => {
-            this.searchMarker();
-        });
-        
-        // Закрытие панелей при клике вне их
+        // Закрытие панелей
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.control-panel')) {
+            if (!e.target.closest('.control-panel') && 
+                !e.target.closest('.control-content')) {
                 this.closeAllPanels();
             }
         });
     },
     
-    toggleControl: function(controlId) {
-        const control = document.getElementById(controlId);
-        if (control) {
-            control.style.display = control.style.display === 'block' ? 'none' : 'block';
-            this.closeOtherPanels(controlId);
+    togglePanel: function(panelId) {
+        const panel = document.getElementById(panelId);
+        if (panel) {
+            panel.style.display = panel.style.display === 'block' ? 'none' : 'block';
         }
-    },
-    
-    closeOtherPanels: function(excludeId) {
-        document.querySelectorAll('.control-content').forEach(panel => {
-            if (panel.id !== excludeId) {
-                panel.style.display = 'none';
-            }
-        });
     },
     
     closeAllPanels: function() {
@@ -123,23 +103,20 @@ const app = {
         this.closeAllPanels();
     },
     
-    toggleMarkers: function(markerType) {
-        const checkbox = document.querySelector(`input[data-markers="${markerType}"]`);
-        if (checkbox) {
-            if (checkbox.checked) {
-                this.map.addLayer(this.markerGroups[markerType]);
-            } else {
-                this.map.removeLayer(this.markerGroups[markerType]);
-            }
+    toggleMarkers: function(markerType, isChecked) {
+        if (isChecked) {
+            this.map.addLayer(this.markerGroups[markerType]);
+        } else {
+            this.map.removeLayer(this.markerGroups[markerType]);
         }
     },
     
     searchMarker: function() {
-        const query = document.getElementById("markerSearch").value.toLowerCase();
-        console.log("Поиск:", query);
+        const query = document.getElementById("markerSearch").value;
+        console.log("Ищем:", query);
         this.closeAllPanels();
     }
 };
 
 // Инициализация при загрузке страницы
-document.addEventListener('DOMContentLoaded', () => app.init());
+window.onload = () => MapManager.init();
