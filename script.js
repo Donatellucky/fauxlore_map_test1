@@ -7,8 +7,8 @@ const map = L.map('map', {
 });
 
 // Размеры изображения (подставьте реальные)
-const mapWidth = 2700;
-const mapHeight = 1700;
+const mapWidth = 2300;
+const mapHeight = 1500;
 const mapBounds = [[0, 0], [mapHeight, mapWidth]];
 
 // Слои карты (используем imageOverlay вместо tileLayer)
@@ -104,6 +104,7 @@ document.addEventListener('click', function(e) {
 });
 
 init();
+
 
 
 
