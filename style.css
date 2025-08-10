@@ -28,6 +28,56 @@
     font-size: 14px;
 }
 
+/* Базовые стили для кнопок */
+/* Базовые стили иконок */
+.map-icon {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    text-shadow: 0 0 3px black;
+}
+
+.capital-icon { color: gold; }
+.city-icon { color: #3498db; }
+.fortress-icon { color: #e74c3c; }
+
+/* Анимация при наведении */
+.map-icon:hover {
+    transform: scale(1.2);
+    transition: transform 0.2s;
+}
+
+/* Стили */
+.map-legend {
+    position: absolute;
+    bottom: 20px;
+    right: 20px;
+    background: rgba(255, 255, 255, 0.9);
+    padding: 10px;
+    border-radius: 5px;
+    z-index: 1000;
+}
+
+.legend-icon {
+    display: inline-block;
+    width: 20px;
+    text-align: center;
+    margin-right: 5px;
+}
+
+/* Анимация при выборе */
+.highlight-icon {
+    color: #f1c40f;
+    animation: pulse 1s;
+}
+
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.5); }
+    100% { transform: scale(1); }
+}
+
 /* Адаптация для мобилок */
 @media (max-width: 768px) {
     .controls {
@@ -49,6 +99,19 @@
 
 .layer-menu button {
     text-align: left;
+}
+
+/* Упрощенное меню */
+@media (max-width: 768px) {
+    .map-legend {
+        bottom: 10px;
+        right: 10px;
+        font-size: 12px;
+    }
+    
+    .map-icon {
+        font-size: 80%;
+    }
 }
 
 /* Показываем меню при наведении (для десктопа) */
@@ -77,3 +140,4 @@
     background: #4a6ea9;
     color: white;
 }
+
