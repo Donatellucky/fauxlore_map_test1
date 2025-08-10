@@ -1,5 +1,13 @@
 // Инициализация карты
-const map = L.map('map').setView([50, 50], 5);
+const map = L.map('map', {
+    crs: L.CRS.Simple, // Используем простую систему координат (без долготы/широты)
+    minZoom: -2,       // Минимальный масштаб
+    maxZoom: 2,        // Максимальный масштаб
+    zoomControl: false // Отключаем стандартные кнопки "+/-"
+});
+const mapWidth = 2700;   // Ширина вашего PNG-изображения в пикселях
+const mapHeight = 1700;  // Высота вашего PNG-изображения в пикселях
+const mapBounds = [[0, 0], [mapHeight, mapWidth]]; // Границы: [верх-лево, низ-право]
 
 // Слои карты
 const layers = {
@@ -81,3 +89,4 @@ document.addEventListener('click', function(e) {
 });
 
 init();
+
