@@ -10,35 +10,35 @@
 <body>
     <div id="map"></div>
     
-    <!-- Компактная панель управления (правый верхний угол) -->
+    <!-- Компактная панель управления -->
     <div class="control-panel">
         <!-- Кнопка основного меню -->
         <div class="control-group">
-            <button class="control-btn" onclick="toggleControl('mainMenu')">☰ Меню</button>
+            <button class="control-btn" data-target="mainMenu">☰ Меню</button>
             <div id="mainMenu" class="control-content">
-                <button onclick="showLayer('political')">🗺️ Политическая</button>
-                <button onclick="showLayer('geographic')">🌍 Географическая</button>
-                <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
+                <button data-layer="political">🗺️ Политическая</button>
+                <button data-layer="geographic">🌍 Географическая</button>
+                <button data-layer="resources">⛏️ Ресурсы</button>
             </div>
         </div>
         
         <!-- Кнопка маркеров -->
         <div class="control-group">
-            <button class="control-btn" onclick="toggleControl('markersMenu')">📍 Маркеры</button>
+            <button class="control-btn" data-target="markersMenu">📍 Маркеры</button>
             <div id="markersMenu" class="control-content">
-                <label><input type="checkbox" checked onclick="toggleMarkers('capitals')"> Столицы</label>
-                <label><input type="checkbox" checked onclick="toggleMarkers('cities')"> Города</label>
-                <label><input type="checkbox" checked onclick="toggleMarkers('fortresses')"> Крепости</label>
-                <label><input type="checkbox" checked onclick="toggleMarkers('ports')"> Порты</label>
+                <label><input type="checkbox" checked data-markers="capitals"> Столицы</label>
+                <label><input type="checkbox" checked data-markers="cities"> Города</label>
+                <label><input type="checkbox" checked data-markers="fortresses"> Крепости</label>
+                <label><input type="checkbox" checked data-markers="ports"> Порты</label>
             </div>
         </div>
         
         <!-- Кнопка поиска -->
         <div class="control-group">
-            <button class="control-btn" onclick="toggleControl('searchPanel')">🔍 Поиск</button>
+            <button class="control-btn" data-target="searchPanel">🔍 Поиск</button>
             <div id="searchPanel" class="control-content">
                 <input type="text" id="markerSearch" placeholder="Введите название">
-                <button onclick="searchMarker()">Найти</button>
+                <button id="searchBtn">Найти</button>
             </div>
         </div>
     </div>
@@ -47,3 +47,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+
