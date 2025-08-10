@@ -1,9 +1,21 @@
 #map {
     width: 100%;
-    height: 100vh; /* На весь экран */
+    height: 100vh;
 }
 
-.controls {
+/* Стили для панелей управления */
+.layers-control {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+}
+
+.markers-control {
     position: absolute;
     top: 10px;
     right: 10px;
@@ -14,130 +26,60 @@
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
-/* Стили для кнопок */
-.controls button {
+.search-control {
+    position: absolute;
+    bottom: 20px;
+    left: 10px;
+    z-index: 1000;
+    background: rgba(255, 255, 255, 0.8);
+    padding: 10px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    display: flex;
+    gap: 5px;
+}
+
+/* Стили для меню */
+.layer-menu, .markers-menu {
+    display: none;
+    margin-top: 5px;
+    background: white;
+    border-radius: 5px;
+    padding: 5px;
+}
+
+.layer-menu button, .markers-menu button {
     display: block;
     width: 100%;
-    margin: 5px 0;
-    padding: 8px 12px;
+    margin: 2px 0;
+    padding: 5px 10px;
     background: #4a6ea9;
     color: white;
     border: none;
     border-radius: 3px;
     cursor: pointer;
     font-size: 14px;
-}
-
-/* Базовые стили для кнопок */
-/* Базовые стили иконок */
-.map-icon {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-weight: bold;
-    text-shadow: 0 0 3px black;
-}
-
-.capital-icon { color: gold; }
-.city-icon { color: #3498db; }
-.fortress-icon { color: #e74c3c; }
-
-/* Анимация при наведении */
-.map-icon:hover {
-    transform: scale(1.2);
-    transition: transform 0.2s;
-}
-
-/* Стили */
-.map-legend {
-    position: absolute;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(255, 255, 255, 0.9);
-    padding: 10px;
-    border-radius: 5px;
-    z-index: 1000;
-}
-
-.legend-icon {
-    display: inline-block;
-    width: 20px;
-    text-align: center;
-    margin-right: 5px;
-}
-
-/* Анимация при выборе */
-.highlight-icon {
-    color: #f1c40f;
-    animation: pulse 1s;
-}
-
-@keyframes pulse {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.5); }
-    100% { transform: scale(1); }
-}
-
-/* Адаптация для мобилок */
-@media (max-width: 768px) {
-    .controls {
-        left: 10px;
-        right: auto;
-        width: 120px;
-    }
-    
-    .controls button {
-        padding: 6px 8px;
-        font-size: 12px;
-    }
-}
-
-.layer-menu {
-    display: none;
-    margin-top: 5px;
-}
-
-.layer-menu button {
     text-align: left;
 }
 
-/* Упрощенное меню */
+/* Стили для иконок маркеров */
+.capital-icon { color: gold; font-size: 24px; text-shadow: 0 0 3px black; }
+.city-icon { color: #3498db; font-size: 20px; text-shadow: 0 0 3px black; }
+.fortress-icon { color: #e74c3c; font-size: 22px; text-shadow: 0 0 3px black; }
+.port-icon { color: #2ecc71; font-size: 22px; text-shadow: 0 0 3px black; }
+
+/* Адаптация для мобильных */
 @media (max-width: 768px) {
-    .map-legend {
-        bottom: 10px;
-        right: 10px;
+    .layers-control, .markers-control {
+        width: 100px;
+    }
+    
+    .layer-menu button, .markers-menu button {
+        padding: 4px 8px;
         font-size: 12px;
     }
     
-    .map-icon {
-        font-size: 80%;
+    .search-control {
+        width: calc(100% - 20px);
     }
 }
-
-/* Показываем меню при наведении (для десктопа) */
-@media (min-width: 769px) {
-    .controls:hover .layer-menu {
-        display: block;
-    }
-}
-
-.tabs {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
-    display: flex;
-}
-
-.tab-btn {
-    padding: 8px 12px;
-    background: #f0f0f0;
-    border: none;
-    cursor: pointer;
-}
-
-.tab-btn.active {
-    background: #4a6ea9;
-    color: white;
-}
-
