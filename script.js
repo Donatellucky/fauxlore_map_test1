@@ -11,9 +11,9 @@ const mapBounds = [[0, 0], [mapHeight, mapWidth]]; // Границы: [верх-
 
 // Слои карты
 const layers = {
-    political: L.tileLayer('img/newfauxpolit.png', { noWrap: true }),
-    geographic: L.tileLayer('img/newfaux.png', { noWrap: true }),
-    resources: L.tileLayer('img/newfauxresource_actual_hod_0.png', { noWrap: true })
+    political: L.imageOverlay('img/newfauxpolit.png', mapBounds),
+    geographic: L.imageOverlay('img/newfaux.png', mapBounds),
+    resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', mapBounds)
 };
 
 // Группы маркеров
@@ -25,9 +25,13 @@ const markers = {
 };
 
 // Инициализация
-function init() {
-    layers.political.addTo(map);
+layers.political.addTo(map);
+    map.fitBounds(mapBounds);
+    
+    // Добавляем маркеры
     addMarkers();
+    
+    // Добавляем все группы маркеров на карту
     Object.values(markers).forEach(group => group.addTo(map));
 }
 
@@ -89,4 +93,5 @@ document.addEventListener('click', function(e) {
 });
 
 init();
+
 
