@@ -8,30 +8,16 @@
 </head>
 <body>
     <div id="map"></div>
-    <div class="controls">
-        <button onclick="showLayer('political')">Политическая</button>
-        <button onclick="showLayer('geographic')">Географическая</button>
-        <button onclick="showLayer('resources')">Ресурсы</button>
-    </div>
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="script.js"></script>
-</body>
-
-</html>
-
 <div class="controls">
     <button onclick="toggleLayerMenu()">☰ Слои</button>
     <div id="layerMenu" class="layer-menu">
         <button onclick="showLayer('political')">🗺️ Политическая</button>
         <button onclick="showLayer('geographic')">🌍 Географическая</button>
         <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
-    </div>
-</div>
-
-<div class="tabs">
-    <button class="tab-btn active" onclick="showLayer('political')">Политическая</button>
-    <button class="tab-btn" onclick="showLayer('geographic')">Географическая</button>
-    <button class="tab-btn" onclick="showLayer('resources')">Ресурсы</button>
-</div>
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="script.js"></script>
+</head>
+<body>
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
