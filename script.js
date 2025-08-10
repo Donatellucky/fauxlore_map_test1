@@ -16,69 +16,67 @@ const markers = {
     ports: L.layerGroup()
 };
 
-// Добавление маркеров (пример)
-function addMarkers() {
-    // Столицы
-    L.marker([50.5, 30.5], { 
-        icon: L.divIcon({ html: '★', className: 'capital-icon' })
-    }).bindPopup("<b>Столица</b>").addTo(markers.capitals);
-    
-    // Порты
-    L.marker([49.8, 31.1], {
-        icon: L.divIcon({ html: '⛵', className: 'port-icon' })
-    }).bindPopup("<b>Порт Аркаим</b>").addTo(markers.ports);
-    
-    // Добавьте остальные маркеры по аналогии
-}
-
 // Инициализация
 function init() {
     layers.political.addTo(map);
     addMarkers();
-    
-    // Добавляем все группы маркеров на карту
     Object.values(markers).forEach(group => group.addTo(map));
+}
+
+// Добавление маркеров
+function addMarkers() {
+    // Пример маркеров (добавьте свои координаты)
+    L.marker([50.5, 30.5], { icon: L.divIcon({ html: '★', className: 'capital-icon' }) })
+        .bindPopup("<b>Столица</b>").addTo(markers.capitals);
+    
+    L.marker([49.8, 31.1], { icon: L.divIcon({ html: '⛵', className: 'port-icon' }) })
+        .bindPopup("<b>Порт Аркаим</b>").addTo(markers.ports);
+}
+
+// Управление элементами интерфейса
+function toggleControl(controlId) {
+    const control = document.getElementById(controlId);
+    control.style.display = control.style.display === 'block' ? 'none' : 'block';
+    
+    // Закрываем другие открытые панели
+    document.querySelectorAll('.control-content').forEach(panel => {
+        if (panel.id !== controlId) panel.style.display = 'none';
+    });
 }
 
 // Управление слоями
 function showLayer(layerName) {
     Object.values(layers).forEach(layer => layer.remove());
     layers[layerName].addTo(map);
+    document.querySelectorAll('.control-content').forEach(panel => {
+        panel.style.display = 'none';
+    });
 }
 
 // Управление маркерами
 function toggleMarkers(markerType) {
-    if (map.hasLayer(markers[markerType])) {
-        map.removeLayer(markers[markerType]);
-    } else {
+    const checkbox = document.querySelector(`input[onclick="toggleMarkers('${markerType}')"]`);
+    if (checkbox.checked) {
         map.addLayer(markers[markerType]);
+    } else {
+        map.removeLayer(markers[markerType]);
     }
 }
 
 // Поиск маркеров
 function searchMarker() {
     const query = document.getElementById("markerSearch").value.toLowerCase();
-    // Реализуйте поиск по вашим маркерам
+    // Реализация поиска
+    console.log("Поиск:", query);
+    document.getElementById("searchPanel").style.display = 'none';
 }
 
-// Переключение меню
-function toggleLayerMenu() {
-    const menu = document.getElementById("layerMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-function toggleMarkersMenu() {
-    const menu = document.getElementById("markersMenu");
-    menu.style.display = menu.style.display === "block" ? "none" : "block";
-}
-
-// Закрытие меню при клике вне его
-document.addEventListener("click", (e) => {
-    if (!e.target.closest(".layers-control")) {
-        document.getElementById("layerMenu").style.display = "none";
-    }
-    if (!e.target.closest(".markers-control")) {
-        document.getElementById("markersMenu").style.display = "none";
+// Закрытие панелей при клике вне их
+document.addEventListener('click', function(e) {
+    if (!e.target.closest('.control-panel')) {
+        document.querySelectorAll('.control-content').forEach(panel => {
+            panel.style.display = 'none';
+        });
     }
 });
 
