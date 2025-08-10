@@ -3,83 +3,81 @@
     height: 100vh;
 }
 
-/* Стили для панелей управления */
-.layers-control {
-    position: absolute;
-    top: 10px;
-    left: 10px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.markers-control {
+/* Компактная панель управления */
+.control-panel {
     position: absolute;
     top: 10px;
     right: 10px;
     z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
-}
-
-.search-control {
-    position: absolute;
-    bottom: 20px;
-    left: 10px;
-    z-index: 1000;
-    background: rgba(255, 255, 255, 0.8);
-    padding: 10px;
-    border-radius: 5px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
     display: flex;
+    flex-direction: column;
     gap: 5px;
 }
 
-/* Стили для меню */
-.layer-menu, .markers-menu {
-    display: none;
-    margin-top: 5px;
-    background: white;
-    border-radius: 5px;
-    padding: 5px;
+.control-group {
+    position: relative;
+    display: flex;
+    justify-content: flex-end;
 }
 
-.layer-menu button, .markers-menu button {
-    display: block;
-    width: 100%;
-    margin: 2px 0;
-    padding: 5px 10px;
+.control-btn {
+    padding: 8px 12px;
     background: #4a6ea9;
     color: white;
     border: none;
     border-radius: 3px;
     cursor: pointer;
     font-size: 14px;
-    text-align: left;
+    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    min-width: 100px;
 }
 
-/* Стили для иконок маркеров */
-.capital-icon { color: gold; font-size: 24px; text-shadow: 0 0 3px black; }
-.city-icon { color: #3498db; font-size: 20px; text-shadow: 0 0 3px black; }
-.fortress-icon { color: #e74c3c; font-size: 22px; text-shadow: 0 0 3px black; }
-.port-icon { color: #2ecc71; font-size: 22px; text-shadow: 0 0 3px black; }
+.control-content {
+    display: none;
+    position: absolute;
+    top: 100%;
+    right: 0;
+    background: white;
+    border-radius: 3px;
+    padding: 10px;
+    box-shadow: 0 0 10px rgba(0,0,0,0.2);
+    min-width: 180px;
+}
+
+.control-content button, 
+.control-content input {
+    margin: 3px 0;
+    padding: 5px;
+    width: 100%;
+}
+
+.control-content label {
+    display: block;
+    padding: 5px;
+    cursor: pointer;
+}
+
+/* Стили маркеров */
+.capital-icon { color: gold; font-size: 20px; text-shadow: 0 0 3px black; }
+.city-icon { color: #3498db; font-size: 18px; text-shadow: 0 0 3px black; }
+.fortress-icon { color: #e74c3c; font-size: 18px; text-shadow: 0 0 3px black; }
+.port-icon { color: #2ecc71; font-size: 18px; text-shadow: 0 0 3px black; }
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
-    .layers-control, .markers-control {
-        width: 100px;
+    .control-panel {
+        top: 5px;
+        right: 5px;
     }
     
-    .layer-menu button, .markers-menu button {
-        padding: 4px 8px;
+    .control-btn {
+        padding: 6px 8px;
         font-size: 12px;
+        min-width: 80px;
     }
     
-    .search-control {
-        width: calc(100% - 20px);
+    .control-content {
+        min-width: 150px;
+        font-size: 14px;
     }
 }
