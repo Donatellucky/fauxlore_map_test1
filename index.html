@@ -3,38 +3,44 @@
 <head>
     <title>Fauxlore Map</title>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <div id="map"></div>
     
-    <!-- Панель управления слоями (левый верхний угол) -->
-    <div class="layers-control">
-        <button onclick="toggleLayerMenu()">☰ Слои</button>
-        <div id="layerMenu" class="layer-menu">
-            <button onclick="showLayer('political')">🗺️ Политическая</button>
-            <button onclick="showLayer('geographic')">🌍 Географическая</button>
-            <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
+    <!-- Компактная панель управления (правый верхний угол) -->
+    <div class="control-panel">
+        <!-- Кнопка основного меню -->
+        <div class="control-group">
+            <button class="control-btn" onclick="toggleControl('mainMenu')">☰ Меню</button>
+            <div id="mainMenu" class="control-content">
+                <button onclick="showLayer('political')">🗺️ Политическая</button>
+                <button onclick="showLayer('geographic')">🌍 Географическая</button>
+                <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
+            </div>
         </div>
-    </div>
-    
-    <!-- Панель управления маркерами (правый верхний угол) -->
-    <div class="markers-control">
-        <button onclick="toggleMarkersMenu()">☰ Маркеры</button>
-        <div id="markersMenu" class="markers-menu">
-            <button onclick="toggleMarkers('capitals')">Столицы</button>
-            <button onclick="toggleMarkers('cities')">Города</button>
-            <button onclick="toggleMarkers('fortresses')">Крепости</button>
-            <button onclick="toggleMarkers('ports')">Порты</button>
+        
+        <!-- Кнопка маркеров -->
+        <div class="control-group">
+            <button class="control-btn" onclick="toggleControl('markersMenu')">📍 Маркеры</button>
+            <div id="markersMenu" class="control-content">
+                <label><input type="checkbox" checked onclick="toggleMarkers('capitals')"> Столицы</label>
+                <label><input type="checkbox" checked onclick="toggleMarkers('cities')"> Города</label>
+                <label><input type="checkbox" checked onclick="toggleMarkers('fortresses')"> Крепости</label>
+                <label><input type="checkbox" checked onclick="toggleMarkers('ports')"> Порты</label>
+            </div>
         </div>
-    </div>
-    
-    <!-- Панель поиска (левый нижний угол) -->
-    <div class="search-control">
-        <input type="text" id="markerSearch" placeholder="Найти место...">
-        <button onclick="searchMarker()">🔍</button>
+        
+        <!-- Кнопка поиска -->
+        <div class="control-group">
+            <button class="control-btn" onclick="toggleControl('searchPanel')">🔍 Поиск</button>
+            <div id="searchPanel" class="control-content">
+                <input type="text" id="markerSearch" placeholder="Введите название">
+                <button onclick="searchMarker()">Найти</button>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
