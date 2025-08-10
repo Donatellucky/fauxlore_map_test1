@@ -120,3 +120,5 @@ const MapManager = {
 
 // Инициализация при загрузке страницы
 window.onload = () => MapManager.init();
+
+
