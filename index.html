@@ -3,34 +3,41 @@
 <head>
     <title>Fauxlore Map</title>
     <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css" />
 </head>
 <body>
     <div id="map"></div>
-<div class="controls">
-    <button onclick="toggleLayerMenu()">☰ Слои</button>
-    <div id="layerMenu" class="layer-menu">
-        <button onclick="showLayer('political')">🗺️ Политическая</button>
-        <button onclick="showLayer('geographic')">🌍 Географическая</button>
-        <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
+    
+    <!-- Панель управления слоями (левый верхний угол) -->
+    <div class="layers-control">
+        <button onclick="toggleLayerMenu()">☰ Слои</button>
+        <div id="layerMenu" class="layer-menu">
+            <button onclick="showLayer('political')">🗺️ Политическая</button>
+            <button onclick="showLayer('geographic')">🌍 Географическая</button>
+            <button onclick="showLayer('resources')">⛏️ Ресурсы</button>
+        </div>
+    </div>
+    
+    <!-- Панель управления маркерами (правый верхний угол) -->
+    <div class="markers-control">
+        <button onclick="toggleMarkersMenu()">☰ Маркеры</button>
+        <div id="markersMenu" class="markers-menu">
+            <button onclick="toggleMarkers('capitals')">Столицы</button>
+            <button onclick="toggleMarkers('cities')">Города</button>
+            <button onclick="toggleMarkers('fortresses')">Крепости</button>
+            <button onclick="toggleMarkers('ports')">Порты</button>
+        </div>
+    </div>
+    
+    <!-- Панель поиска (левый нижний угол) -->
+    <div class="search-control">
+        <input type="text" id="markerSearch" placeholder="Найти место...">
+        <button onclick="searchMarker()">🔍</button>
+    </div>
+
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
-</head>
-<body>
-
-// Пояснение значков
-<div class="map-legend">
-    <h4>Легенда:</h4>
-    <div><span class="legend-icon capital-icon">★</span> — Столицы</div>
-    <div><span class="legend-icon city-icon">●</span> — Города</div>
-    <div><span class="legend-icon fortress-icon">⌖</span> — Крепости</div>
-</div>
-
-// Поиск по названиям
-<input type="text" id="markerSearch" placeholder="Найти город...">
-<button onclick="searchMarker()">Поиск</button>
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-
-
+</body>
+</html>
