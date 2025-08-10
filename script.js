@@ -1,86 +1,110 @@
-// Инициализация после полной загрузки DOM
-document.addEventListener('DOMContentLoaded', function() {
-    // Размеры изображения
-    const mapWidth = 2300;
-    const mapHeight = 1500;
-    const mapBounds = [[0, 0], [mapHeight, mapWidth]];
-    
-    // Инициализация карты
-    const map = L.map('map', {
-        crs: L.CRS.Simple,
-        minZoom: -2,
-        maxZoom: 5,
-        zoomControl: false
-    });
-
-    // Слои карты
-    const layers = {
-        political: L.imageOverlay('img/newfauxpolit.png', mapBounds),
-        geographic: L.imageOverlay('img/newfaux.png', mapBounds),
-        resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', mapBounds)
-    };
-
-    // Группы маркеров
-    const markerGroups = {
-        capitals: L.layerGroup(),
-        cities: L.layerGroup(),
-        fortresses: L.layerGroup(),
-        ports: L.layerGroup()
-    };
+// Главный объект для хранения состояния карты
+const FauxloreMap = {
+    map: null,
+    mapWidth: 2300,
+    mapHeight: 1500,
+    layers: {},
+    markerGroups: {},
 
     // Инициализация карты
-    function init() {
-        // Загрузка основного слоя
-        layers.political.addTo(map);
-        map.fitBounds(mapBounds);
+    init: function() {
+        // Создаем карту
+        this.map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 5,
+            zoomControl: false
+        });
+
+        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
         
-        // Тестовые маркеры
-        addTestMarkers();
+        // Инициализируем слои
+        this.layers = {
+            political: L.imageOverlay('img/newfauxpolit.png', bounds),
+            geographic: L.imageOverlay('img/newfaux.png', bounds),
+            resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds)
+        };
+
+        // Инициализируем группы маркеров
+        this.markerGroups = {
+            capitals: L.layerGroup(),
+            cities: L.layerGroup(),
+            fortresses: L.layerGroup(),
+            ports: L.layerGroup()
+        };
+
+        // Загружаем основной слой
+        this.layers.political.addTo(this.map);
+        this.map.fitBounds(bounds);
         
-        // Активация всех маркеров по умолчанию
-        Object.values(markerGroups).forEach(group => group.addTo(map));
-    }
+        // Добавляем тестовые маркеры
+        this.addTestMarkers();
+        
+        // Активируем все маркеры по умолчанию
+        Object.values(this.markerGroups).forEach(group => group.addTo(this.map));
+    },
 
     // Добавление тестовых маркеров
-    function addTestMarkers() {
-        // Центр карты
-        L.marker([mapHeight/2, mapWidth/2], {
-            icon: L.divIcon({ html: '★', className: 'capital-icon' })
-        }).bindPopup("Столица").addTo(markerGroups.capitals);
+    addTestMarkers: function() {
+        const centerY = this.mapHeight/2;
+        const centerX = this.mapWidth/2;
         
-        // Пример порта
-        L.marker([mapHeight*0.7, mapWidth*0.3], {
+        // Столица
+        L.marker([centerY, centerX], {
+            icon: L.divIcon({ html: '★', className: 'capital-icon' })
+        }).bindPopup("Столица").addTo(this.markerGroups.capitals);
+        
+        // Порт
+        L.marker([centerY*1.2, centerX*0.8], {
             icon: L.divIcon({ html: '⛵', className: 'port-icon' })
-        }).bindPopup("Порт").addTo(markerGroups.ports);
+        }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
     }
+};
 
-    // Функции управления интерфейсом
-    window.toggleControl = function(controlId) {
-        const control = document.getElementById(controlId);
-        if (control) {
-            control.style.display = control.style.display === 'block' ? 'none' : 'block';
-        }
-    };
+// Глобальные функции для работы с интерфейсом
+function toggleControl(controlId) {
+    const control = document.getElementById(controlId);
+    if (control) {
+        control.style.display = control.style.display === 'block' ? 'none' : 'block';
+        
+        // Закрываем другие панели
+        document.querySelectorAll('.control-content').forEach(panel => {
+            if (panel.id !== controlId) panel.style.display = 'none';
+        });
+    }
+}
 
-    window.showLayer = function(layerName) {
-        Object.values(layers).forEach(layer => layer.remove());
-        layers[layerName].addTo(map);
-    };
+function showLayer(layerName) {
+    Object.values(FauxloreMap.layers).forEach(layer => layer.remove());
+    FauxloreMap.layers[layerName].addTo(FauxloreMap.map);
+    
+    // Закрываем все панели
+    document.querySelectorAll('.control-content').forEach(panel => {
+        panel.style.display = 'none';
+    });
+}
 
-    window.toggleMarkers = function(markerType) {
-        if (map.hasLayer(markerGroups[markerType])) {
-            map.removeLayer(markerGroups[markerType]);
+function toggleMarkers(markerType) {
+    const checkbox = document.querySelector(`input[onclick="toggleMarkers('${markerType}')"]`);
+    if (checkbox) {
+        if (checkbox.checked) {
+            FauxloreMap.map.addLayer(FauxloreMap.markerGroups[markerType]);
         } else {
-            map.addLayer(markerGroups[markerType]);
+            FauxloreMap.map.removeLayer(FauxloreMap.markerGroups[markerType]);
         }
-    };
+    }
+}
 
-    window.searchMarker = function() {
-        const query = document.getElementById("markerSearch").value.toLowerCase();
-        console.log("Поиск:", query);
-        document.getElementById("searchPanel").style.display = 'none';
-    };
+function searchMarker() {
+    const query = document.getElementById("markerSearch")?.value.toLowerCase();
+    console.log("Поиск:", query);
+    document.getElementById("searchPanel").style.display = 'none';
+}
 
+// Инициализация после загрузки страницы
+document.addEventListener('DOMContentLoaded', function() {
+    FauxloreMap.init();
+    
     // Закрытие панелей при клике вне их
     document.addEventListener('click', function(e) {
         if (!e.target.closest('.control-panel')) {
@@ -89,7 +113,4 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
     });
-
-    // Запуск инициализации
-    init();
 });
