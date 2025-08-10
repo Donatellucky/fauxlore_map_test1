@@ -1,15 +1,17 @@
 // Инициализация карты
 const map = L.map('map', {
-    crs: L.CRS.Simple, // Используем простую систему координат (без долготы/широты)
-    minZoom: -2,       // Минимальный масштаб
-    maxZoom: 2,        // Максимальный масштаб
-    zoomControl: false // Отключаем стандартные кнопки "+/-"
+    crs: L.CRS.Simple,
+    minZoom: -2,
+    maxZoom: 2,
+    zoomControl: false
 });
-const mapWidth = 2700;   // Ширина вашего PNG-изображения в пикселях
-const mapHeight = 1700;  // Высота вашего PNG-изображения в пикселях
-const mapBounds = [[0, 0], [mapHeight, mapWidth]]; // Границы: [верх-лево, низ-право]
 
-// Слои карты
+// Размеры изображения (подставьте реальные)
+const mapWidth = 2700;
+const mapHeight = 1700;
+const mapBounds = [[0, 0], [mapHeight, mapWidth]];
+
+// Слои карты (используем imageOverlay вместо tileLayer)
 const layers = {
     political: L.imageOverlay('img/newfauxpolit.png', mapBounds),
     geographic: L.imageOverlay('img/newfaux.png', mapBounds),
@@ -25,8 +27,17 @@ const markers = {
 };
 
 // Инициализация
-layers.political.addTo(map);
+function init() {
+    // Показываем политическую карту по умолчанию
+    layers.political.addTo(map);
     map.fitBounds(mapBounds);
+    
+    // Добавляем маркеры
+    addMarkers();
+    
+    // Добавляем все группы маркеров на карту
+    Object.values(markers).forEach(group => group.addTo(map));
+}
     
     // Добавляем маркеры
     addMarkers();
@@ -93,5 +104,6 @@ document.addEventListener('click', function(e) {
 });
 
 init();
+
 
 
