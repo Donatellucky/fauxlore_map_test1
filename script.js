@@ -7,8 +7,8 @@ const map = L.map('map', {
 });
 
 // Определяем границы карты (подставьте реальные размеры вашего PNG в пикселях)
-const mapWidth = 2000; // Ширина изображения в px
-const mapHeight = 1500; // Высота изображения в px
+const mapWidth = 2282; // Ширина изображения в px
+const mapHeight = 1561; // Высота изображения в px
 const mapBounds = [[0, 0], [mapHeight, mapWidth]];
 
 // Создаем слои
@@ -54,3 +54,4 @@ document.querySelectorAll(".tab-btn").forEach(btn => {
 document.querySelectorAll(".controls button").forEach(btn => {
     btn.addEventListener("touchstart", (e) => e.stopPropagation());
 });
+
