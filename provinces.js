@@ -1,5 +1,9 @@
-class ProvinceManager {
-    constructor(map) {
+class ProvinceSystem {
+    constructor() {
+        if (!window.mapApp || !window.mapApp.map) {
+            console.error("Карта не найдена. Убедитесь, что script.js загружен первым.");
+            return;
+        }
         this.map = map;
         this.provinces = {};
         this.highlighted = null;
