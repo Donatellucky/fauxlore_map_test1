@@ -63,6 +63,11 @@ class MapApp {
 
         const centerY = this.mapHeight/2;
         const centerX = this.mapWidth/2;
+
+        L.marker([this.mapHeight/2, this.mapWidth/2])
+            .addTo(this.map)
+            .bindPopup("Тест карты")
+            .openPopup();     
         
         // Тестовые маркеры
         L.marker([centerY, centerX], {
@@ -200,8 +205,4 @@ window.onload = () => {
     window.app = app;
 };
 
-L.marker([this.mapHeight/2, this.mapWidth/2])
-  .addTo(this.map)
-  .bindPopup("Тест карты")
-  .openPopup();
 
