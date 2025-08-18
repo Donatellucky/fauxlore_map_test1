@@ -28,6 +28,7 @@ class MapApp {
             political: L.imageOverlay('img/newfauxpolit.png', bounds),
             geographic: L.imageOverlay('img/newfaux.png', bounds),
             resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds)
+            trade: L.imageOverlay('img/newfauxtrade.png', bounds)
         };
         
         this.layers.political.addTo(this.map);
@@ -152,3 +153,4 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new MapApp();
     app.init();
 });
+
