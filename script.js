@@ -13,6 +13,7 @@ class MapApp {
         this.createLayers();
         this.createMarkers();
         this.setupUI();
+        window.mapApp = this;
         console.log("Карта инициализирована"); // Для отладки
     }
 
@@ -203,3 +204,4 @@ L.marker([this.mapHeight/2, this.mapWidth/2])
   .addTo(this.map)
   .bindPopup("Тест карты")
   .openPopup();
+
