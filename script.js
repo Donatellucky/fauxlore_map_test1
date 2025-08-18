@@ -3,6 +3,9 @@ class MapApp {
         this.activePanel = null;
         this.mapWidth = 2300;
         this.mapHeight = 1500;
+        this.map = null;
+        this.layers = {};
+        this.markerGroups = {};
     }
 
     init() {
@@ -10,6 +13,7 @@ class MapApp {
         this.createLayers();
         this.createMarkers();
         this.setupUI();
+        console.log("Карта инициализирована"); // Для отладки
     }
 
     createMap() {
@@ -19,20 +23,33 @@ class MapApp {
             maxZoom: 5,
             zoomControl: false
         });
+        
+        // Проверка создания карты
+        console.log("Карта создана:", this.map);
     }
 
     createLayers() {
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
         
-        this.layers = {
-            political: L.imageOverlay('img/newfauxpolit.png', bounds),
-            geographic: L.imageOverlay('img/newfaux.png', bounds),
-            resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds)
-            trade: L.imageOverlay('img/newfauxtrade.png', bounds)
-        };
-        
-        this.layers.political.addTo(this.map);
-        this.map.fitBounds(bounds);
+        try {
+            this.layers = {
+                political: L.imageOverlay('img/newfauxpolit.png', bounds),
+                geographic: L.imageOverlay('img/newfaux.png', bounds),
+                resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds),
+                trade: L.imageOverlay('img/newfauxtrade.png', bounds)
+            };
+            
+            // Проверка загрузки изображений
+            this.layers.political.addTo(this.map).on('load', () => {
+                console.log("Основной слой загружен");
+                this.map.fitBounds(bounds);
+            }).on('error', () => {
+                console.error("Ошибка загрузки изображения");
+            });
+            
+        } catch (e) {
+            console.error("Ошибка создания слоев:", e);
+        }
     }
 
     createMarkers() {
@@ -46,6 +63,7 @@ class MapApp {
         const centerY = this.mapHeight/2;
         const centerX = this.mapWidth/2;
         
+        // Тестовые маркеры
         L.marker([centerY, centerX], {
             icon: L.divIcon({ html: '★', className: 'capital-icon' })
         }).bindPopup("Столица").addTo(this.markerGroups.capitals);
@@ -54,45 +72,55 @@ class MapApp {
             icon: L.divIcon({ html: '⛵', className: 'port-icon' })
         }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
 
-        Object.values(this.markerGroups).forEach(group => group.addTo(this.map));
+        // Активируем все маркеры
+        Object.values(this.markerGroups).forEach(group => {
+            group.addTo(this.map);
+        });
     }
 
     setupUI() {
+        // Проверяем существование элементов перед добавлением обработчиков
+        const initButton = (id, handler) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('click', handler.bind(this));
+            } else {
+                console.error("Элемент не найден:", id);
+            }
+        };
+
         // Основные кнопки
-        document.getElementById('menuBtn').addEventListener('click', () => 
-            this.togglePanel('mainMenu'));
-        document.getElementById('markersBtn').addEventListener('click', () => 
-            this.togglePanel('markersMenu'));
-        document.getElementById('searchBtn').addEventListener('click', () => 
-            this.togglePanel('searchPanel'));
+        initButton('menuBtn', () => this.togglePanel('mainMenu'));
+        initButton('markersBtn', () => this.togglePanel('markersMenu'));
+        initButton('searchBtn', () => this.togglePanel('searchPanel'));
 
         // Кнопки слоев
-        document.getElementById('politicalBtn').addEventListener('click', () => 
-            this.showLayer('political'));
-        document.getElementById('geographicBtn').addEventListener('click', () => 
-            this.showLayer('geographic'));
-        document.getElementById('resourcesBtn').addEventListener('click', () => 
-            this.showLayer('resources'));
-        document.getElementById('newfauxtradeBtn').addEventListener('click',() =>
-            this.showLayer('trade'));
+        initButton('politicalBtn', () => this.showLayer('political'));
+        initButton('geographicBtn', () => this.showLayer('geographic'));
+        initButton('resourcesBtn', () => this.showLayer('resources'));
+        initButton('newfauxtradeBtn', () => this.showLayer('trade'));
 
         // Чекбоксы маркеров
-        document.getElementById('toggleCapitals').addEventListener('change', (e) => 
-            this.toggleMarkers('capitals', e.target.checked));
-        document.getElementById('toggleCities').addEventListener('change', (e) => 
-            this.toggleMarkers('cities', e.target.checked));
-        document.getElementById('toggleFortresses').addEventListener('change', (e) => 
-            this.toggleMarkers('fortresses', e.target.checked));
-        document.getElementById('togglePorts').addEventListener('change', (e) => 
-            this.toggleMarkers('ports', e.target.checked));
+        const initCheckbox = (id, type) => {
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('change', (e) => 
+                    this.toggleMarkers(type, e.target.checked));
+            }
+        };
+
+        initCheckbox('toggleCapitals', 'capitals');
+        initCheckbox('toggleCities', 'cities');
+        initCheckbox('toggleFortresses', 'fortresses');
+        initCheckbox('togglePorts', 'ports');
 
         // Поиск
-        document.getElementById('executeSearch').addEventListener('click', () => 
-            this.searchMarker());
+        initButton('executeSearch', () => this.searchMarker());
 
         // Закрытие при клике вне панели
         document.addEventListener('click', (e) => {
-            if (!e.target.closest('.control-panel')) {
+            if (!e.target.closest('.control-panel') && 
+                !e.target.closest('.control-content')) {
                 this.closeAllPanels();
             }
         });
@@ -100,26 +128,19 @@ class MapApp {
 
     togglePanel(panelId) {
         const panel = document.getElementById(panelId);
-        
+        if (!panel) {
+            console.error("Панель не найдена:", panelId);
+            return;
+        }
+
         if (this.activePanel === panel) {
             this.closeAllPanels();
             return;
         }
         
         this.closeAllPanels();
-        
-        if (panel) {
-            panel.classList.add('active');
-            this.activePanel = panel;
-            
-            // Плавно сдвигаем другие кнопки вниз
-            const buttons = document.querySelectorAll('.control-btn');
-            buttons.forEach(btn => {
-                if (btn !== document.activeElement) {
-                    btn.style.transform = 'translateY(0)';
-                }
-            });
-        }
+        panel.classList.add('active');
+        this.activePanel = panel;
     }
 
     closeAllPanels() {
@@ -130,12 +151,25 @@ class MapApp {
     }
 
     showLayer(layerName) {
-        Object.values(this.layers).forEach(layer => layer.remove());
+        if (!this.layers[layerName]) {
+            console.error("Слой не найден:", layerName);
+            return;
+        }
+
+        Object.values(this.layers).forEach(layer => {
+            if (layer) layer.remove();
+        });
+        
         this.layers[layerName].addTo(this.map);
         this.closeAllPanels();
     }
 
     toggleMarkers(markerType, isChecked) {
+        if (!this.markerGroups[markerType]) {
+            console.error("Группа маркеров не найдена:", markerType);
+            return;
+        }
+
         if (isChecked) {
             this.map.addLayer(this.markerGroups[markerType]);
         } else {
@@ -144,18 +178,23 @@ class MapApp {
     }
 
     searchMarker() {
-        const query = document.getElementById('markerSearch').value;
-        console.log('Поиск:', query);
+        const searchInput = document.getElementById('markerSearch');
+        if (!searchInput) {
+            console.error("Поле поиска не найдено");
+            return;
+        }
+        
+        console.log('Поиск:', searchInput.value);
         this.closeAllPanels();
     }
 }
 
-// Инициализация
-document.addEventListener('DOMContentLoaded', () => {
+// Инициализация после полной загрузки страницы
+window.onload = () => {
+    console.log("Страница загружена, инициализируем карту...");
     const app = new MapApp();
     app.init();
-});
-
-<script src="provinces-data.js"></script>
-<script src="provinces.js"></script>
-
+    
+    // Для доступа из консоли
+    window.app = app;
+};
