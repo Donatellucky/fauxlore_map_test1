@@ -97,12 +97,25 @@ constructor(map) {  // принимаем карту как параметр
     }
 
     // Подсветка провинции на карте
-    highlightProvince(id, province) {
-        // Удаляем предыдущую подсветку
-        if (this.highlighted) {
-            this.layer.removeLayer(this.highlighted);
-        }
+highlightProvince(id, province) {
+    if (this.highlighted) {
+        this.layer.removeLayer(this.highlighted);
+    }
 
+    // Преобразуем координаты в систему Leaflet
+    const latLngs = province.coords.map(coord => {
+        // Предполагаем, что coords в формате [y, x]
+        return L.latLng(coord[0], coord[1]);
+    });
+
+    this.highlighted = L.polygon(latLngs, {
+        color: province.color,
+        weight: 3,
+        fillOpacity: 0.2
+    }).addTo(this.layer);
+
+    this.showProvinceInfo(id, province);
+}
         // Создаем полигон для подсветки
         this.highlighted = L.polygon(province.coords, {
             color: province.color,
