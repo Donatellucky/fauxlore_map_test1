@@ -156,4 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
     app.init();
 });
 
+<script src="provinces-data.js"></script>
+<script src="provinces.js"></script>
 
