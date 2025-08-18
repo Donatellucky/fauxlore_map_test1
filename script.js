@@ -8,14 +8,19 @@ class MapApp {
         this.markerGroups = {};
     }
 
-    init() {
-        this.createMap();
-        this.createLayers();
-        this.createMarkers();
-        this.setupUI();
-        window.mapApp = this;
-        console.log("Карта инициализирована"); // Для отладки
-    }
+init() {
+    this.createMap();
+    this.createLayers();
+    this.createMarkers();
+    this.setupUI();
+    window.mapApp = this;
+    
+    // Инициализируем систему провинций после создания карты
+    window.provinceManager = new ProvinceSystem(this.map);
+    window.provinceManager.init();
+    
+    console.log("Карта инициализирована");
+}
 
     createMap() {
         this.map = L.map('map', {
@@ -204,5 +209,6 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
 
 
