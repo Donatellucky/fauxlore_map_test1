@@ -104,3 +104,73 @@
         width: 100%;
     }
 }
+
+/* Провинции */
+/* Стили для системы провинций */
+.province-sidebar {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 15px;
+    width: 300px;
+    max-height: 80vh;
+    overflow-y: auto;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    border-radius: 5px;
+    margin: 10px;
+}
+
+.province-header {
+    margin-bottom: 15px;
+}
+
+.province-search {
+    width: 100%;
+    padding: 8px;
+    margin-top: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.province-list {
+    max-height: 300px;
+    overflow-y: auto;
+    margin-bottom: 15px;
+}
+
+.province-item {
+    padding: 8px 12px;
+    margin: 5px 0;
+    background: #f5f5f5;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+}
+
+.province-item:hover {
+    background: #e0e0e0;
+}
+
+.province-id {
+    display: inline-block;
+    width: 40px;
+    font-weight: bold;
+    color: #4a6ea9;
+}
+
+.province-name {
+    flex-grow: 1;
+}
+
+.province-info {
+    padding: 10px;
+    background: #f9f9f9;
+    border-radius: 4px;
+    border-left: 3px solid #4a6ea9;
+}
+
+.province-meta {
+    display: flex;
+    justify-content: space-between;
+    margin: 10px 0;
+    font-size: 0.9em;
+    color: #666;
+}
