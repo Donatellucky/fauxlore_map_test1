@@ -44,7 +44,19 @@ init() {
                 resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds),
                 trade: L.imageOverlay('img/newfauxtrade.png', bounds)
             };
-            
+
+            // Добавляем обработчики ошибок для каждого слоя
+    Object.values(this.layers).forEach(layer => {
+        layer.on('error', () => {
+            console.error('Ошибка загрузки изображения слоя');
+        });
+    });
+    
+    this.layers.political.addTo(this.map).on('load', () => {
+        console.log("Основной слой загружен");
+        this.map.fitBounds(bounds);
+    });
+}
             // Проверка загрузки изображений
             this.layers.political.addTo(this.map).on('load', () => {
                 console.log("Основной слой загружен");
@@ -209,6 +221,7 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
 
 
 
