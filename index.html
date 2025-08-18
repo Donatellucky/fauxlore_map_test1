@@ -10,36 +10,29 @@
 <body>
     <div id="map"></div>
     
-    <!-- Панель управления -->
     <div class="control-panel">
-        <!-- Меню слоев -->
-        <div class="control-group">
-            <button id="menuBtn" class="control-btn">☰ Меню</button>
-            <div id="mainMenu" class="control-content">
-                <button id="politicalBtn">🗺️ Политическая</button>
-                <button id="geographicBtn">🌍 Географическая</button>
-                <button id="resourcesBtn">⛏️ Ресурсы</button>
-            </div>
+        <!-- Кнопка меню -->
+        <button id="menuBtn" class="control-btn">☰ Меню</button>
+        <div id="mainMenu" class="control-content">
+            <button id="politicalBtn">🗺️ Политическая</button>
+            <button id="geographicBtn">🌍 Географическая</button>
+            <button id="resourcesBtn">⛏️ Ресурсы</button>
         </div>
         
-        <!-- Управление маркерами -->
-        <div class="control-group">
-            <button id="markersBtn" class="control-btn">📍 Маркеры</button>
-            <div id="markersMenu" class="control-content">
-                <label><input type="checkbox" id="toggleCapitals" checked> Столицы</label>
-                <label><input type="checkbox" id="toggleCities" checked> Города</label>
-                <label><input type="checkbox" id="toggleFortresses" checked> Крепости</label>
-                <label><input type="checkbox" id="togglePorts" checked> Порты</label>
-            </div>
+        <!-- Кнопка маркеров -->
+        <button id="markersBtn" class="control-btn">📍 Маркеры</button>
+        <div id="markersMenu" class="control-content">
+            <label><input type="checkbox" id="toggleCapitals" checked> Столицы</label>
+            <label><input type="checkbox" id="toggleCities" checked> Города</label>
+            <label><input type="checkbox" id="toggleFortresses" checked> Крепости</label>
+            <label><input type="checkbox" id="togglePorts" checked> Порты</label>
         </div>
         
-        <!-- Поиск -->
-        <div class="control-group">
-            <button id="searchBtn" class="control-btn">🔍 Поиск</button>
-            <div id="searchPanel" class="control-content">
-                <input type="text" id="markerSearch" placeholder="Введите название">
-                <button id="executeSearch">Найти</button>
-            </div>
+        <!-- Кнопка поиска -->
+        <button id="searchBtn" class="control-btn">🔍 Поиск</button>
+        <div id="searchPanel" class="control-content">
+            <input type="text" id="markerSearch" placeholder="Введите название">
+            <button id="executeSearch">Найти</button>
         </div>
     </div>
 
