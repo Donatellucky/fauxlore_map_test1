@@ -73,6 +73,8 @@ class MapApp {
             this.showLayer('geographic'));
         document.getElementById('resourcesBtn').addEventListener('click', () => 
             this.showLayer('resources'));
+        document.getElementById('newfauxtradeBtn').addEventListener('click',() =>
+            this.showLayer('trade'));
 
         // Чекбоксы маркеров
         document.getElementById('toggleCapitals').addEventListener('change', (e) => 
@@ -153,4 +155,5 @@ document.addEventListener('DOMContentLoaded', () => {
     const app = new MapApp();
     app.init();
 });
+
 
