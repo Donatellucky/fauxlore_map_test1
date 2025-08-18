@@ -198,3 +198,8 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
+L.marker([this.mapHeight/2, this.mapWidth/2])
+  .addTo(this.map)
+  .bindPopup("Тест карты")
+  .openPopup();
