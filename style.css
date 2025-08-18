@@ -3,7 +3,7 @@
     height: 100vh;
 }
 
-/* Компактная панель управления */
+/* Основной контейнер панели управления */
 .control-panel {
     position: absolute;
     top: 10px;
@@ -11,15 +11,12 @@
     z-index: 1000;
     display: flex;
     flex-direction: column;
+    align-items: flex-end;
     gap: 5px;
+    transition: all 0.3s ease;
 }
 
-.control-group {
-    position: relative;
-    display: flex;
-    justify-content: flex-end;
-}
-
+/* Стиль для всех кнопок */
 .control-btn {
     padding: 8px 12px;
     background: #4a6ea9;
@@ -28,56 +25,82 @@
     border-radius: 3px;
     cursor: pointer;
     font-size: 14px;
-    box-shadow: 0 0 5px rgba(0,0,0,0.2);
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
     min-width: 100px;
+    text-align: center;
+    transition: transform 0.2s;
 }
 
+.control-btn:hover {
+    transform: translateY(-2px);
+    background: #3a5a8f;
+}
+
+/* Стиль для открытых панелей */
 .control-content {
     display: none;
-    position: absolute;
-    top: 100%;
-    right: 0;
     background: white;
     border-radius: 3px;
     padding: 10px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.2);
-    min-width: 180px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.2);
+    width: 180px;
+    margin-top: 5px;
 }
 
-.control-content button, 
-.control-content input {
-    margin: 3px 0;
-    padding: 5px;
-    width: 100%;
-}
-
-.control-content label {
+/* Стиль кнопок внутри панелей */
+.control-content button {
     display: block;
-    padding: 5px;
+    width: 100%;
+    margin: 5px 0;
+    padding: 8px;
+    background: #f0f0f0;
+    border: none;
+    border-radius: 2px;
+    cursor: pointer;
+    text-align: left;
+    transition: background 0.2s;
+}
+
+.control-content button:hover {
+    background: #e0e0e0;
+}
+
+/* Стиль для чекбоксов */
+.control-content label {
+    display: flex;
+    align-items: center;
+    padding: 5px 0;
     cursor: pointer;
 }
 
-/* Стили маркеров */
-.capital-icon { color: gold; font-size: 20px; text-shadow: 0 0 3px black; }
-.city-icon { color: #3498db; font-size: 18px; text-shadow: 0 0 3px black; }
-.fortress-icon { color: #e74c3c; font-size: 18px; text-shadow: 0 0 3px black; }
-.port-icon { color: #2ecc71; font-size: 18px; text-shadow: 0 0 3px black; }
+.control-content input[type="checkbox"] {
+    margin-right: 8px;
+}
+
+/* Анимация открытия/закрытия */
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.control-content.active {
+    display: block;
+    animation: slideDown 0.3s ease forwards;
+}
 
 /* Адаптация для мобильных */
 @media (max-width: 768px) {
     .control-panel {
-        top: 5px;
-        right: 5px;
+        width: 95%;
+        right: 2.5%;
     }
     
     .control-btn {
-        padding: 6px 8px;
-        font-size: 12px;
-        min-width: 80px;
+        padding: 10px;
+        font-size: 16px;
     }
     
     .control-content {
-        min-width: 150px;
-        font-size: 14px;
+        width: 100%;
     }
 }
