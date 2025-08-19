@@ -15,6 +15,7 @@ class MapApp {
         };
     }
 
+
     init() {
         this.createMap();
         this.createBaseLayers();
@@ -40,7 +41,7 @@ class MapApp {
             maxZoom: 5,
             zoomControl: false
         });
-
+        
         // Устанавливаем границы
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
         this.map.fitBounds(bounds);
@@ -88,6 +89,14 @@ class MapApp {
 
     setupUI() {
         // Кнопки переключения слоев
+                document.getElementById('menuBtn')?.addEventListener('click', () => {
+            this.togglePanel('mainMenu');
+        });
+        
+        document.getElementById('markersBtn')?.addEventListener('click', () => {
+            this.togglePanel('markersMenu');
+        });
+        
         document.getElementById('politicalBtn')?.addEventListener('click', () => {
             this.showLayer('political');
         });
@@ -104,26 +113,46 @@ class MapApp {
         document.getElementById('togglePorts')?.addEventListener('change', (e) => {
             this.toggleMarkers('ports', e.target.checked);
         });
+                
+        // Закрытие при клике вне панели
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.control-panel') && 
+                !e.target.closest('.control-content')) {
+                this.closeAllPanels();
+            }
+        });
     }
 
-    showLayer(layerName) {
-        if (!this.layers[layerName]) {
-            console.error("Слой не найден:", layerName);
+       togglePanel(panelId) {
+        const panel = document.getElementById(panelId);
+        if (!panel) return;
+
+        if (this.activePanel === panel) {
+            this.closeAllPanels();
             return;
         }
-
-        // Скрываем все слои
-        Object.values(this.layers).forEach(layer => layer.remove());
         
-        // Показываем выбранный слой
+        this.closeAllPanels();
+        panel.classList.add('active');
+        this.activePanel = panel;
+    }
+
+    closeAllPanels() {
+        document.querySelectorAll('.control-content').forEach(panel => {
+            panel.classList.remove('active');
+        });
+        this.activePanel = null;
+    }
+    
+    showLayer(layerName) {
+        if (!this.layers[layerName]) return;
+
+        Object.values(this.layers).forEach(layer => layer.remove());
         this.layers[layerName].addTo(this.map);
     }
 
     toggleMarkers(markerType, isChecked) {
-        if (!this.markerGroups[markerType]) {
-            console.error("Группа маркеров не найдена:", markerType);
-            return;
-        }
+        if (!this.markerGroups[markerType]) return;
 
         isChecked ? 
             this.map.addLayer(this.markerGroups[markerType]) : 
@@ -133,12 +162,11 @@ class MapApp {
 
 // Инициализация при загрузке страницы
 window.onload = () => {
-    // Проверяем загрузился ли Leaflet
     if (typeof L === 'undefined') {
         console.error('Leaflet не загружен!');
-        document.body.innerHTML = '<div style="color:red;padding:20px;">Ошибка: Библиотека карт не загрузилась</div>';
         return;
     }
 
     new MapApp().init();
 };
+
