@@ -2,197 +2,108 @@ console.log('script.js loaded');
 
 class MapApp {
     constructor() {
+        this.activePanel = null;
         this.mapWidth = 2300;
         this.mapHeight = 1500;
-        this.init();
+        this.map = null;
+        this.layers = {};
+        this.markerGroups = {
+            capitals: L.layerGroup(),
+            cities: L.layerGroup(),
+            fortresses: L.layerGroup(),
+            ports: L.layerGroup()
+        };
     }
 
     init() {
-        // 1. Создаем карту
         this.createMap();
-        
-        // 2. Добавляем тестовый слой
-        this.addTestLayer();
-        
-        // 3. Добавляем тестовый маркер
-        this.addTestMarker();
+        this.createBaseLayers();
+        this.createMarkers();
+        this.setupUI();
         
         console.log("Карта успешно инициализирована");
-    }
- 
-       console.log("Проверка элементов DOM:");
-        console.log("Элемент #map:", document.getElementById('map'));
-        console.log("Размеры #map:", 
-                    document.getElementById('map')?.offsetWidth, 
-                    document.getElementById('map')?.offsetHeight);
-        
-        // Проверяем и инициализируем систему провинций
-        if (typeof ProvinceSystem !== 'undefined') {
-            try {
-                this.provinceSystem = new ProvinceSystem(this.map);
-                this.provinceSystem.init();
-                console.log("Система провинций инициализирована");
-            } catch (e) {
-                console.error("Ошибка инициализации ProvinceSystem:", e);
-            }
-        } else {
-            console.error("ProvinceSystem не загружен. Проверьте порядок загрузки скриптов.");
-        }
-        
-        console.log("Карта инициализирована");
+        window.mapApp = this;
     }
 
- createMap() {
+    createMap() {
         // Проверяем наличие контейнера
-        if (!document.getElementById('map')) {
+        const mapElement = document.getElementById('map');
+        if (!mapElement) {
             console.error('Элемент #map не найден!');
             return;
         }
 
+        // Создаем карту
         this.map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -2,
             maxZoom: 5,
             zoomControl: false
         });
-     
-  // Устанавливаем границы карты
-        const southWest = this.map.unproject([0, this.mapHeight], 0);
-        const northEast = this.map.unproject([this.mapWidth, 0], 0);
-        this.mapBounds = new L.LatLngBounds(southWest, northEast);
+
+        // Устанавливаем границы
+        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
+        this.map.fitBounds(bounds);
+    }
+
+    createBaseLayers() {
+        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
         
-        this.map.fitBounds(this.mapBounds);
+        // Основные слои
+        this.layers = {
+            political: L.imageOverlay('img/newfauxpolit.png', bounds, {
+                error: () => console.error('Ошибка загрузки политической карты')
+            }),
+            geographic: L.imageOverlay('img/newfaux.png', bounds, {
+                error: () => console.error('Ошибка загрузки географической карты')
+            })
+        };
+
+        // Добавляем политическую карту по умолчанию
+        this.layers.political.addTo(this.map);
     }
 
-   addTestLayer() {
-        // Создаем тестовый прямоугольник вместо изображения
-        const testLayer = L.rectangle(this.mapBounds, {
-            color: "#3388ff",
-            fillOpacity: 0.1
-        }).addTo(this.map);
-        
-        testLayer.bindPopup("Тестовая карта работает!").openPopup();
-    }
+    createMarkers() {
+        const centerY = this.mapHeight / 2;
+        const centerX = this.mapWidth / 2;
 
-            // Добавляем обработчики ошибок для каждого слоя
-            Object.values(this.layers).forEach(layer => {
-                layer.on('error', () => {
-                    console.error('Ошибка загрузки изображения слоя');
-                });
-            });
-            
-            this.layers.political.addTo(this.map).on('load', () => {
-                console.log("Основной слой загружен");
-                this.map.fitBounds(bounds);
-            });
-            
-        } catch (e) {
-            console.error("Ошибка создания слоев:", e);
-        }
-    }
-
-    addTestMarker() {
-        // Добавляем маркер в центр карты
-        const center = this.mapBounds.getCenter();
-        L.marker(center).addTo(this.map)
-            .bindPopup("Центр карты")
-            .openPopup();
-    }
-}
-
-        const centerY = this.mapHeight/2;
-        const centerX = this.mapWidth/2;
-
-        // Тестовый маркер
-        L.marker([centerY, centerX])
-            .addTo(this.map)
-            .bindPopup("Тест карты")
-            .openPopup();     
-        
         // Тестовые маркеры
         L.marker([centerY, centerX], {
             icon: L.divIcon({ html: '★', className: 'capital-icon' })
-        }).bindPopup("Столица").addTo(this.markerGroups.capitals);
-        
-        L.marker([centerY*1.2, centerX*0.8], {
-            icon: L.divIcon({ html: '⛵', className: 'port-icon' })
-        }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
+        })
+        .bindPopup("Столица")
+        .addTo(this.markerGroups.capitals);
 
-        // Активируем все маркеры
+        L.marker([centerY * 1.2, centerX * 0.8], {
+            icon: L.divIcon({ html: '⛵', className: 'port-icon' })
+        })
+        .bindPopup("Главный порт")
+        .addTo(this.markerGroups.ports);
+
+        // Добавляем все группы маркеров на карту
         Object.values(this.markerGroups).forEach(group => {
             group.addTo(this.map);
         });
     }
 
     setupUI() {
-        const initButton = (id, handler) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('click', handler.bind(this));
-            } else {
-                console.error("Элемент не найден:", id);
-            }
-        };
-
-        // Основные кнопки
-        initButton('menuBtn', () => this.togglePanel('mainMenu'));
-        initButton('markersBtn', () => this.togglePanel('markersMenu'));
-        initButton('searchBtn', () => this.togglePanel('searchPanel'));
-
-        // Кнопки слоев
-        initButton('politicalBtn', () => this.showLayer('political'));
-        initButton('geographicBtn', () => this.showLayer('geographic'));
-        initButton('resourcesBtn', () => this.showLayer('resources'));
-        initButton('newfauxtradeBtn', () => this.showLayer('trade'));
+        // Кнопки переключения слоев
+        document.getElementById('politicalBtn')?.addEventListener('click', () => {
+            this.showLayer('political');
+        });
+        
+        document.getElementById('geographicBtn')?.addEventListener('click', () => {
+            this.showLayer('geographic');
+        });
 
         // Чекбоксы маркеров
-        const initCheckbox = (id, type) => {
-            const element = document.getElementById(id);
-            if (element) {
-                element.addEventListener('change', (e) => 
-                    this.toggleMarkers(type, e.target.checked));
-            }
-        };
-
-        initCheckbox('toggleCapitals', 'capitals');
-        initCheckbox('toggleCities', 'cities');
-        initCheckbox('toggleFortresses', 'fortresses');
-        initCheckbox('togglePorts', 'ports');
-
-        // Поиск
-        initButton('executeSearch', () => this.searchMarker());
-
-        // Закрытие при клике вне панели
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.control-panel') && 
-                !e.target.closest('.control-content')) {
-                this.closeAllPanels();
-            }
+        document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
+            this.toggleMarkers('capitals', e.target.checked);
         });
-    }
-
-    togglePanel(panelId) {
-        const panel = document.getElementById(panelId);
-        if (!panel) {
-            console.error("Панель не найдена:", panelId);
-            return;
-        }
-
-        if (this.activePanel === panel) {
-            this.closeAllPanels();
-            return;
-        }
         
-        this.closeAllPanels();
-        panel.classList.add('active');
-        this.activePanel = panel;
-    }
-
-    closeAllPanels() {
-        document.querySelectorAll('.control-content').forEach(panel => {
-            panel.classList.remove('active');
+        document.getElementById('togglePorts')?.addEventListener('change', (e) => {
+            this.toggleMarkers('ports', e.target.checked);
         });
-        this.activePanel = null;
     }
 
     showLayer(layerName) {
@@ -201,12 +112,11 @@ class MapApp {
             return;
         }
 
-        Object.values(this.layers).forEach(layer => {
-            if (layer) layer.remove();
-        });
+        // Скрываем все слои
+        Object.values(this.layers).forEach(layer => layer.remove());
         
+        // Показываем выбранный слой
         this.layers[layerName].addTo(this.map);
-        this.closeAllPanels();
     }
 
     toggleMarkers(markerType, isChecked) {
@@ -215,36 +125,20 @@ class MapApp {
             return;
         }
 
-        if (isChecked) {
-            this.map.addLayer(this.markerGroups[markerType]);
-        } else {
+        isChecked ? 
+            this.map.addLayer(this.markerGroups[markerType]) : 
             this.map.removeLayer(this.markerGroups[markerType]);
-        }
-    }
-
-    searchMarker() {
-        const searchInput = document.getElementById('markerSearch');
-        if (!searchInput) {
-            console.error("Поле поиска не найдено");
-            return;
-        }
-        
-        console.log('Поиск:', searchInput.value);
-        this.closeAllPanels();
     }
 }
 
-// Инициализация после полной загрузки страницы
+// Инициализация при загрузке страницы
 window.onload = () => {
-    console.log("Страница загружена, инициализируем карту...");
-    const app = new MapApp();
-    app.init();
-    
-    window.app = app;
+    // Проверяем загрузился ли Leaflet
+    if (typeof L === 'undefined') {
+        console.error('Leaflet не загружен!');
+        document.body.innerHTML = '<div style="color:red;padding:20px;">Ошибка: Библиотека карт не загрузилась</div>';
+        return;
+    }
+
+    new MapApp().init();
 };
-
-
-
-
-
-
