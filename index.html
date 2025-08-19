@@ -1,64 +1,151 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
-    <title>Fauxlore Map</title>
-    <meta charset="utf-8">
+    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fauxlore - Интерактивная карта</title>
+    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
-    <link rel="stylesheet" href="style.css" />
+    <!-- Наши стили -->
     <style>
-        body, html {
+        body {
             margin: 0;
             padding: 0;
-            height: 100%;
+            font-family: 'Arial', sans-serif;
             overflow: hidden;
         }
+        
         #map {
             position: absolute;
             top: 0;
             bottom: 0;
             left: 0;
             right: 0;
+            background: #e0e0e0;
+        }
+        
+        .control-panel {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .control-btn {
+            display: block;
+            margin: 5px 0;
+            padding: 8px 12px;
+            background: #4a6ea9;
+            color: white;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 14px;
+            min-width: 120px;
+            text-align: center;
+        }
+        
+        .control-btn:hover {
+            background: #3a5a8f;
+        }
+        
+        .control-content {
+            display: none;
+            padding: 10px 0;
+        }
+        
+        .control-content.active {
+            display: block;
+        }
+        
+        .control-content label {
+            display: block;
+            margin: 5px 0;
+            cursor: pointer;
+        }
+        
+        /* Стили для маркеров */
+        .capital-icon, .port-icon {
+            font-size: 24px;
+            text-align: center;
+            line-height: 1;
+        }
+        
+        .capital-icon {
+            color: gold;
+            text-shadow: 0 0 3px black;
+        }
+        
+        .port-icon {
+            color: blue;
+        }
+        
+        /* Сообщение об ошибке */
+        .map-error {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #ff4444;
+            color: white;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 2000;
+            max-width: 80%;
+            text-align: center;
         }
     </style>
 </head>
 <body>
+    <!-- Основной контейнер карты -->
     <div id="map"></div>
     
+    <!-- Панель управления -->
     <div class="control-panel">
-        <!-- Кнопка меню -->
         <button id="menuBtn" class="control-btn">☰ Меню</button>
+        
         <div id="mainMenu" class="control-content">
-            <button id="politicalBtn">🗺️ Политическая</button>
-            <button id="geographicBtn">🌍 Географическая</button>
-            <button id="resourcesBtn">⛏️ Ресурсы</button>
-            <button id="newfauxtradeBtn"> Торговля</button>
+            <button id="politicalBtn" class="control-btn">🗺️ Политическая</button>
+            <button id="geographicBtn" class="control-btn">🌍 Географическая</button>
         </div>
         
-        <!-- Кнопка маркеров -->
         <button id="markersBtn" class="control-btn">📍 Маркеры</button>
         <div id="markersMenu" class="control-content">
             <label><input type="checkbox" id="toggleCapitals" checked> Столицы</label>
-            <label><input type="checkbox" id="toggleCities" checked> Города</label>
-            <label><input type="checkbox" id="toggleFortresses" checked> Крепости</label>
             <label><input type="checkbox" id="togglePorts" checked> Порты</label>
-        </div>
-        
-        <!-- Кнопка поиска -->
-        <button id="searchBtn" class="control-btn">🔍 Поиск</button>
-        <div id="searchPanel" class="control-content">
-            <input type="text" id="markerSearch" placeholder="Введите название">
-            <button id="executeSearch">Найти</button>
         </div>
     </div>
 
+    <!-- Подключаем Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <script src="provinces-data.js"></script>
-    <script src="provinces.js"></script>
+    <!-- Наш основной скрипт -->
     <script src="script.js"></script>
+    
+    <!-- Скрипт для проверки ошибок -->
+    <script>
+        // Проверяем загрузку Leaflet
+        setTimeout(() => {
+            if (typeof L === 'undefined') {
+                const errorDiv = document.createElement('div');
+                errorDiv.className = 'map-error';
+                errorDiv.innerHTML = 'ОШИБКА: Библиотека карт не загрузилась.<br>Проверьте подключение к интернету.';
+                document.body.appendChild(errorDiv);
+            }
+            
+            // Проверяем инициализацию карты через 2 секунды
+            setTimeout(() => {
+                if (!document.querySelector('.leaflet-layer')) {
+                    const errorDiv = document.createElement('div');
+                    errorDiv.className = 'map-error';
+                    errorDiv.innerHTML = 'Карта не загрузилась.<br>Проверьте:<br>1. Наличие файлов карт в папке img/<br>2. Консоль разработчика (F12)';
+                    document.body.appendChild(errorDiv);
+                }
+            }, 2000);
+        }, 100);
+    </script>
 </body>
 </html>
-
-
-
-
