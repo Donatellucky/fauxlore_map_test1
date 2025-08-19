@@ -1,4 +1,5 @@
 console.log('script.js loaded');
+
 class MapApp {
     constructor() {
         this.activePanel = null;
@@ -7,31 +8,32 @@ class MapApp {
         this.map = null;
         this.layers = {};
         this.markerGroups = {};
+        this.provinceSystem = null; // Добавляем свойство для системы провинций
     }
 
-init() {
-    this.createMap();
-    this.createLayers();
-    this.createMarkers();
-    this.setupUI();
-    window.mapApp = this;
-    
-    // Инициализируем систему провинций после создания карты
-    window.provinceManager = new ProvinceSystem(this.map);
-    window.provinceManager.init();
-    
-    console.log("Карта инициализирована");
-}
+    init() {
+        this.createMap();
+        this.createLayers();
+        this.createMarkers();
+        this.setupUI();
+        window.mapApp = this;
+        
+        // Проверяем и инициализируем систему провинций
+        if (typeof ProvinceSystem !== 'undefined') {
+            try {
+                this.provinceSystem = new ProvinceSystem(this.map);
+                this.provinceSystem.init();
+                console.log("Система провинций инициализирована");
+            } catch (e) {
+                console.error("Ошибка инициализации ProvinceSystem:", e);
+            }
+        } else {
+            console.error("ProvinceSystem не загружен. Проверьте порядок загрузки скриптов.");
+        }
+        
+        console.log("Карта инициализирована");
+    }
 
-   if (window.ProvinceSystem) {
-    this.provinceSystem = new ProvinceSystem(this.map);
-    this.provinceSystem.init();
-} else {
-    console.error("ProvinceSystem не загружен");
-}
-    
-    console.log("Карта инициализирована");
-}
     createMap() {
         this.map = L.map('map', {
             crs: L.CRS.Simple,
@@ -40,7 +42,6 @@ init() {
             zoomControl: false
         });
         
-        // Проверка создания карты
         console.log("Карта создана:", this.map);
     }
 
@@ -56,22 +57,15 @@ init() {
             };
 
             // Добавляем обработчики ошибок для каждого слоя
-    Object.values(this.layers).forEach(layer => {
-        layer.on('error', () => {
-            console.error('Ошибка загрузки изображения слоя');
-        });
-    });
-    
-    this.layers.political.addTo(this.map).on('load', () => {
-        console.log("Основной слой загружен");
-        this.map.fitBounds(bounds);
-    });
-            // Проверка загрузки изображений
+            Object.values(this.layers).forEach(layer => {
+                layer.on('error', () => {
+                    console.error('Ошибка загрузки изображения слоя');
+                });
+            });
+            
             this.layers.political.addTo(this.map).on('load', () => {
                 console.log("Основной слой загружен");
                 this.map.fitBounds(bounds);
-            }).on('error', () => {
-                console.error("Ошибка загрузки изображения");
             });
             
         } catch (e) {
@@ -90,7 +84,8 @@ init() {
         const centerY = this.mapHeight/2;
         const centerX = this.mapWidth/2;
 
-        L.marker([this.mapHeight/2, this.mapWidth/2])
+        // Тестовый маркер
+        L.marker([centerY, centerX])
             .addTo(this.map)
             .bindPopup("Тест карты")
             .openPopup();     
@@ -111,7 +106,6 @@ init() {
     }
 
     setupUI() {
-        // Проверяем существование элементов перед добавлением обработчиков
         const initButton = (id, handler) => {
             const element = document.getElementById(id);
             if (element) {
@@ -227,15 +221,5 @@ window.onload = () => {
     const app = new MapApp();
     app.init();
     
-    // Для доступа из консоли
     window.app = app;
 };
-
-
-
-
-
-
-
-
-
