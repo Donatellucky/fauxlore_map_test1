@@ -1,3 +1,22 @@
+// Проверка загрузки Leaflet
+console.log("Leaflet доступен?", typeof L !== 'undefined');
+console.log("L.map доступен?", typeof L.map === 'function');
+
+// Проверка элемента карты
+document.addEventListener('DOMContentLoaded', () => {
+    const mapElement = document.getElementById('map');
+    if (!mapElement) {
+        console.error("Элемент #map не найден в DOM!");
+        // Создаем элемент аварийно
+        const newMap = document.createElement('div');
+        newMap.id = 'map';
+        newMap.style.width = '100%';
+        newMap.style.height = '100vh';
+        document.body.prepend(newMap);
+        console.log("Создан новый элемент #map");
+    }
+});
+
 console.log('script.js loaded');
 
 class MapApp {
@@ -236,4 +255,5 @@ window.onload = () => {
     
     window.app = app;
 };
+
 
