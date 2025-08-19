@@ -118,16 +118,32 @@ highlightProvince(id, province) {
 
     this.showProvinceInfo(id, province);
 }
-        // Создаем полигон для подсветки
+highlightProvince(id, province) {
+    // Удаляем предыдущую подсветку
+    if (this.highlighted) {
+        this.layer.removeLayer(this.highlighted);
+    }
+
+    // Проверяем и преобразуем координаты
+    if (!province.coords || !Array.isArray(province.coords)) {
+        console.error("Invalid coordinates for province:", id);
+        return;
+    }
+
+    // Создаем полигон для подсветки
+    try {
         this.highlighted = L.polygon(province.coords, {
-            color: province.color,
+            color: province.color || '#3498db',
             weight: 3,
             fillOpacity: 0.2
         }).addTo(this.layer);
-
-        // Показываем информацию
-        this.showProvinceInfo(id, province);
+    } catch (e) {
+        console.error("Error creating polygon for province:", id, e);
     }
+
+    // Показываем информацию
+    this.showProvinceInfo(id, province);
+}
 
     // Отображение информации о провинции
     showProvinceInfo(id, province) {
