@@ -1,160 +1,230 @@
 console.log('provinces.js loaded');
+
 class ProvinceSystem {
     constructor(map) {
         if (!map) {
-            console.error("Карта не найдена.");
+            console.error("Карта не найдена. Проверьте инициализацию.");
             return;
         }
+        
         this.map = map;
         this.provinces = {};
         this.highlighted = null;
         this.layer = L.layerGroup().addTo(map);
+        this.sidebar = null;
+        this.currentProvince = null;
+        
+        // Загрузка данных
+        const { provinces, config } = loadProvincesData();
+        this.provincesData = provinces;
+        this.config = config;
     }
 
-    // Инициализация системы провинций
     init() {
         this.loadProvinces();
         this.createSidebar();
+        this.setupEventListeners();
+        console.log("Система провинций инициализирована");
     }
 
-    // Загрузка данных о провинциях (пример)
     loadProvinces() {
-        // В реальном проекте загружайте из JSON файла
-        this.provinces = {
-            101: this.createProvinceData("Северные земли", "горный", [[100,200],[120,220],[110,250]]),
-            102: this.createProvinceData("Золотая долина", "равнина", [[300,400],[320,420],[310,450]]),
-            // ... остальные провинции
-        };
+        for (const id in this.provincesData) {
+            const province = this.provincesData[id];
+            this.provinces[id] = {
+                ...province,
+                color: this.getColorByType(province.type),
+                markers: this.createProvinceMarkers(id, province)
+            };
+        }
+        console.log(`Загружено ${Object.keys(this.provinces).length} провинций`);
     }
 
-    createProvinceData(name, type, coords) {
-        return {
-            name: name,
-            type: type,
-            coords: coords,
-            description: `${name} - ${type} регион с уникальными особенностями`,
-            color: this.getColorByType(type)
-        };
-    }
-
-    getColorByType(type) {
-        const colors = {
-            'горный': '#4a6ea9',
-            'равнина': '#2ecc71',
-            'лес': '#27ae60',
-            'пустыня': '#f39c12'
-        };
-        return colors[type] || '#3498db';
-    }
-
-    // Создание боковой панели
-    createSidebar() {
-        const sidebar = L.control({position: 'topleft'});
+    createProvinceMarkers(id, province) {
+        const markers = [];
         
-        sidebar.onAdd = () => {
+        // Маркер столицы
+        if (province.capital) {
+            markers.push(this.createMarker(
+                province.capital.coords, 
+                province.capital.name, 
+                'capital',
+                id
+            ));
+        }
+        
+        // Города
+        if (province.cities) {
+            province.cities.forEach(city => {
+                markers.push(this.createMarker(
+                    city.coords, 
+                    city.name, 
+                    'city',
+                    id
+                ));
+            });
+        }
+        
+        // Крепости
+        if (province.fortresses) {
+            province.fortresses.forEach(fort => {
+                markers.push(this.createMarker(
+                    fort.coords, 
+                    fort.name, 
+                    'fortress',
+                    id
+                ));
+            });
+        }
+        
+        return markers;
+    }
+
+    createMarker(coords, name, type, provinceId) {
+        const iconCfg = this.config.iconTypes[type] || this.config.iconTypes.city;
+        const icon = L.divIcon({
+            html: iconCfg.html,
+            className: `province-marker ${iconCfg.className}`,
+            iconSize: iconCfg.iconSize
+        });
+        
+        const marker = L.marker([coords[0], coords[1]], { icon })
+            .bindPopup(`<b>${name}</b><br>Провинция: ${this.provincesData[provinceId].name}`)
+            .addTo(this.layer);
+            
+        marker.on('click', () => {
+            this.highlightProvince(provinceId);
+        });
+        
+        return marker;
+    }
+
+    createSidebar() {
+        this.sidebar = L.control({ position: 'topleft' });
+        
+        this.sidebar.onAdd = () => {
             this.sidebarContainer = L.DomUtil.create('div', 'province-sidebar');
             this.renderSidebarContent();
             return this.sidebarContainer;
         };
         
-        sidebar.addTo(this.map);
+        this.sidebar.addTo(this.map);
     }
 
-    // Обновление содержимого боковой панели
     renderSidebarContent(filter = '') {
         this.sidebarContainer.innerHTML = `
             <div class="province-header">
                 <h3>Провинции</h3>
-                <input type="text" class="province-search" placeholder="Поиск...">
+                <input type="text" class="province-search" placeholder="Поиск провинции...">
+                <div class="province-filters">
+                    <label><input type="checkbox" class="filter-mountain" checked> Горные</label>
+                    <label><input type="checkbox" class="filter-plain" checked> Равнины</label>
+                </div>
             </div>
             <div class="province-list"></div>
             <div class="province-info"></div>
         `;
-
-        // Обработчики событий
-        this.sidebarContainer.querySelector('.province-search').addEventListener('input', (e) => {
-            this.renderProvinceList(e.target.value);
-        });
-
+        
         this.renderProvinceList(filter);
     }
 
-    // Отображение списка провинций
     renderProvinceList(filter = '') {
         const listContainer = this.sidebarContainer.querySelector('.province-list');
         listContainer.innerHTML = '';
+        
+        const showMountain = this.sidebarContainer.querySelector('.filter-mountain').checked;
+        const showPlain = this.sidebarContainer.querySelector('.filter-plain').checked;
 
         Object.entries(this.provinces).forEach(([id, province]) => {
             if (filter && !province.name.toLowerCase().includes(filter.toLowerCase())) return;
-
+            
+            // Фильтрация по типу
+            if ((province.type === 'горный' && !showMountain) || 
+                (province.type === 'равнина' && !showPlain)) return;
+            
             const item = document.createElement('div');
             item.className = 'province-item';
             item.innerHTML = `
                 <span class="province-id">${id}</span>
                 <span class="province-name">${province.name}</span>
+                <span class="province-type" style="color:${province.color}">${province.type}</span>
             `;
-            item.addEventListener('click', () => this.highlightProvince(id, province));
+            
+            item.addEventListener('click', () => this.highlightProvince(id));
             listContainer.appendChild(item);
         });
     }
 
-    // Подсветка провинции на карте
-highlightProvince(id, province) {
-    if (this.highlighted) {
-        this.layer.removeLayer(this.highlighted);
-    }
-
-    // Преобразуем координаты в систему Leaflet
-    const latLngs = province.coords.map(coord => {
-        // Предполагаем, что coords в формате [y, x]
-        return L.latLng(coord[0], coord[1]);
-    });
-
-    this.highlighted = L.polygon(latLngs, {
-        color: province.color,
-        weight: 3,
-        fillOpacity: 0.2
-    }).addTo(this.layer);
-
-    this.showProvinceInfo(id, province);
-}
-highlightProvince(id, province) {
-    // Удаляем предыдущую подсветку
-    if (this.highlighted) {
-        this.layer.removeLayer(this.highlighted);
-    }
-
-    // Проверяем и преобразуем координаты
-    if (!province.coords || !Array.isArray(province.coords)) {
-        console.error("Invalid coordinates for province:", id);
-        return;
-    }
-
-    // Создаем полигон для подсветки
-    try {
+    highlightProvince(id) {
+        // Снимаем предыдущую подсветку
+        if (this.highlighted) {
+            this.layer.removeLayer(this.highlighted);
+        }
+        
+        const province = this.provinces[id];
+        if (!province) return;
+        
+        this.currentProvince = id;
+        
+        // Подсветка границ провинции
         this.highlighted = L.polygon(province.coords, {
-            color: province.color || '#3498db',
+            color: province.color,
             weight: 3,
             fillOpacity: 0.2
         }).addTo(this.layer);
-    } catch (e) {
-        console.error("Error creating polygon for province:", id, e);
+        
+        // Показываем информацию
+        this.showProvinceInfo(id);
+        
+        // Центрируем карту на провинции
+        const bounds = L.latLngBounds(province.coords);
+        this.map.fitBounds(bounds.pad(0.2));
     }
 
-    // Показываем информацию
-    this.showProvinceInfo(id, province);
-}
-
-    // Отображение информации о провинции
-    showProvinceInfo(id, province) {
+    showProvinceInfo(id) {
+        const province = this.provinces[id];
+        if (!province) return;
+        
         const infoContainer = this.sidebarContainer.querySelector('.province-info');
         infoContainer.innerHTML = `
             <h4>${province.name}</h4>
             <div class="province-meta">
                 <span>ID: ${id}</span>
-                <span>Тип: ${province.type}</span>
+                <span>Тип: <span style="color:${province.color}">${province.type}</span></span>
             </div>
             <p>${province.description}</p>
+            <div class="province-resources">
+                <h5>Ресурсы:</h5>
+                <ul>${province.resources.map(r => `<li>${r}</li>`).join('')}</ul>
+            </div>
+            ${province.capital ? `<div class="province-capital">Столица: ${province.capital.name}</div>` : ''}
         `;
     }
+
+    getColorByType(type) {
+        return this.config.colors[type] || this.config.colors.default;
+    }
+
+    setupEventListeners() {
+        // Поиск провинций
+        this.sidebarContainer?.querySelector('.province-search')?.addEventListener('input', (e) => {
+            this.renderProvinceList(e.target.value);
+        });
+        
+        // Фильтры
+        this.sidebarContainer?.querySelector('.filter-mountain')?.addEventListener('change', () => {
+            this.renderProvinceList(this.sidebarContainer.querySelector('.province-search').value);
+        });
+        
+        this.sidebarContainer?.querySelector('.filter-plain')?.addEventListener('change', () => {
+            this.renderProvinceList(this.sidebarContainer.querySelector('.province-search').value);
+        });
+    }
+}
+
+// Автоматическая инициализация при загрузке
+if (window.mapApp) {
+    window.provinceSystem = new ProvinceSystem(window.mapApp.map);
+    window.provinceSystem.init();
+} else {
+    console.error("MapApp не найден. Проверьте порядок загрузки скриптов.");
 }
