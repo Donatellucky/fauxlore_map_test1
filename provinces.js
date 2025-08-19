@@ -132,7 +132,7 @@ highlightProvince(id, province) {
 
     // Создаем полигон для подсветки
     try {
-        this.highlighted = L.polygon(province.coords, {
+        this.highlighted = L.polygon(province.coords), {
             color: province.color || '#3498db',
             weight: 3,
             fillOpacity: 0.2
