@@ -226,8 +226,13 @@ function initProvinceSystem() {
     if (window.mapApp && window.mapApp.map) {
         window.provinceSystem = new ProvinceSystem(window.mapApp.map);
         window.provinceSystem.init();
+    } else {
+        console.log("MapApp еще не загружен, повторная попытка через 500мс...");
+        setTimeout(initProvinceSystem, 500);
+    }
 }
 
+// Запуск инициализации
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initProvinceSystem);
 } else {
