@@ -18,6 +18,19 @@ class MapApp {
         this.setupUI();
         window.mapApp = this;
         
+       console.log("Проверка элементов DOM:");
+console.log("Элемент #map:", document.getElementById('map'));
+console.log("Размеры #map:", 
+  document.getElementById('map')?.offsetWidth, 
+  document.getElementById('map')?.offsetHeight);
+  
+// Тестовая карта (упрощенный вариант)
+const testMap = L.map('map').setView([51.505, -0.09], 13);
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(testMap);
+L.marker([51.5, -0.09]).addTo(testMap)
+  .bindPopup('Тестовая карта работает')
+  .openPopup(); 
+        
         // Проверяем и инициализируем систему провинций
         if (typeof ProvinceSystem !== 'undefined') {
             try {
@@ -223,3 +236,4 @@ window.onload = () => {
     
     window.app = app;
 };
+
