@@ -174,3 +174,25 @@
     font-size: 0.9em;
     color: #666;
 }
+
+#map {
+    width: 100% !important;
+    height: 100vh !important;
+    background-color: #e0e0e0;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+}
+
+/* Гарантированное отображение ошибки */
+.map-error {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: red;
+    color: white;
+    padding: 20px;
+    z-index: 10000;
+}
