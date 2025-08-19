@@ -42,7 +42,19 @@ console.log("Элемент #map:", document.getElementById('map'));
 console.log("Размеры #map:", 
   document.getElementById('map')?.offsetWidth, 
   document.getElementById('map')?.offsetHeight);
-  
+
+        setTimeout(() => {
+    if (!document.querySelector('.leaflet-container')) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'map-error';
+        errorDiv.innerHTML = 'Карта не загрузилась. Проверьте:<br>'
+            + '1. Загрузку Leaflet CSS/JS<br>'
+            + '2. Наличие элемента #map<br>'
+            + '3. Консоль на ошибки';
+        document.body.appendChild(errorDiv);
+    }
+}, 1000);
+        
 // Тестовая карта (упрощенный вариант)
 const testMap = L.map('map').setView([51.505, -0.09], 13);
 L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(testMap);
@@ -255,5 +267,6 @@ window.onload = () => {
     
     window.app = app;
 };
+
 
 
