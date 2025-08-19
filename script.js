@@ -2,22 +2,24 @@ console.log('script.js loaded');
 
 class MapApp {
     constructor() {
-        this.activePanel = null;
         this.mapWidth = 2300;
         this.mapHeight = 1500;
-        this.map = null;
-        this.layers = {};
-        this.markerGroups = {};
-        this.provinceSystem = null; // Добавляем свойство для системы провинций
+        this.init();
     }
 
     init() {
+        // 1. Создаем карту
         this.createMap();
-        this.createLayers();
-        this.createMarkers();
-        this.setupUI();
-        window.mapApp = this;
         
+        // 2. Добавляем тестовый слой
+        this.addTestLayer();
+        
+        // 3. Добавляем тестовый маркер
+        this.addTestMarker();
+        
+        console.log("Карта успешно инициализирована");
+    }
+ 
        console.log("Проверка элементов DOM:");
         console.log("Элемент #map:", document.getElementById('map'));
         console.log("Размеры #map:", 
@@ -40,33 +42,37 @@ class MapApp {
         console.log("Карта инициализирована");
     }
 
-createMap() {
-    // Проверяем, существует ли уже карта
-    if (this.map) {
-        console.warn("Карта уже существует, удаляем старую версию");
-        this.map.remove();
-    }
-    
-    this.map = L.map('map', {
-        crs: L.CRS.Simple,
-        minZoom: -2,
-        maxZoom: 5,
-        zoomControl: false
-    });
-    
-    console.log("Новая карта создана:", this.map);
-}
+ createMap() {
+        // Проверяем наличие контейнера
+        if (!document.getElementById('map')) {
+            console.error('Элемент #map не найден!');
+            return;
+        }
 
-    createLayers() {
-        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
+        this.map = L.map('map', {
+            crs: L.CRS.Simple,
+            minZoom: -2,
+            maxZoom: 5,
+            zoomControl: false
+        });
+     
+  // Устанавливаем границы карты
+        const southWest = this.map.unproject([0, this.mapHeight], 0);
+        const northEast = this.map.unproject([this.mapWidth, 0], 0);
+        this.mapBounds = new L.LatLngBounds(southWest, northEast);
         
-        try {
-            this.layers = {
-                political: L.imageOverlay('img/newfauxpolit.png', bounds),
-                geographic: L.imageOverlay('img/newfaux.png', bounds),
-                resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds),
-                trade: L.imageOverlay('img/newfauxtrade.png', bounds)
-            };
+        this.map.fitBounds(this.mapBounds);
+    }
+
+   addTestLayer() {
+        // Создаем тестовый прямоугольник вместо изображения
+        const testLayer = L.rectangle(this.mapBounds, {
+            color: "#3388ff",
+            fillOpacity: 0.1
+        }).addTo(this.map);
+        
+        testLayer.bindPopup("Тестовая карта работает!").openPopup();
+    }
 
             // Добавляем обработчики ошибок для каждого слоя
             Object.values(this.layers).forEach(layer => {
@@ -85,13 +91,14 @@ createMap() {
         }
     }
 
-    createMarkers() {
-        this.markerGroups = {
-            capitals: L.layerGroup(),
-            cities: L.layerGroup(),
-            fortresses: L.layerGroup(),
-            ports: L.layerGroup()
-        };
+    addTestMarker() {
+        // Добавляем маркер в центр карты
+        const center = this.mapBounds.getCenter();
+        L.marker(center).addTo(this.map)
+            .bindPopup("Центр карты")
+            .openPopup();
+    }
+}
 
         const centerY = this.mapHeight/2;
         const centerX = this.mapWidth/2;
@@ -235,6 +242,7 @@ window.onload = () => {
     
     window.app = app;
 };
+
 
 
 
