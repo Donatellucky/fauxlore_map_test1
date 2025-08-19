@@ -1,22 +1,3 @@
-// Проверка загрузки Leaflet
-console.log("Leaflet доступен?", typeof L !== 'undefined');
-console.log("L.map доступен?", typeof L.map === 'function');
-
-// Проверка элемента карты
-document.addEventListener('DOMContentLoaded', () => {
-    const mapElement = document.getElementById('map');
-    if (!mapElement) {
-        console.error("Элемент #map не найден в DOM!");
-        // Создаем элемент аварийно
-        const newMap = document.createElement('div');
-        newMap.id = 'map';
-        newMap.style.width = '100%';
-        newMap.style.height = '100vh';
-        document.body.prepend(newMap);
-        console.log("Создан новый элемент #map");
-    }
-});
-
 console.log('script.js loaded');
 
 class MapApp {
@@ -42,18 +23,6 @@ console.log("Элемент #map:", document.getElementById('map'));
 console.log("Размеры #map:", 
   document.getElementById('map')?.offsetWidth, 
   document.getElementById('map')?.offsetHeight);
-
-        setTimeout(() => {
-    if (!document.querySelector('.leaflet-container')) {
-        const errorDiv = document.createElement('div');
-        errorDiv.className = 'map-error';
-        errorDiv.innerHTML = 'Карта не загрузилась. Проверьте:<br>'
-            + '1. Загрузку Leaflet CSS/JS<br>'
-            + '2. Наличие элемента #map<br>'
-            + '3. Консоль на ошибки';
-        document.body.appendChild(errorDiv);
-    }
-}, 1000);
         
 // Тестовая карта (упрощенный вариант)
 const testMap = L.map('map').setView([51.505, -0.09], 13);
@@ -78,16 +47,22 @@ L.marker([51.5, -0.09]).addTo(testMap)
         console.log("Карта инициализирована");
     }
 
-    createMap() {
-        this.map = L.map('map', {
-            crs: L.CRS.Simple,
-            minZoom: -2,
-            maxZoom: 5,
-            zoomControl: false
-        });
-        
-        console.log("Карта создана:", this.map);
+createMap() {
+    // Проверяем, существует ли уже карта
+    if (this.map) {
+        console.warn("Карта уже существует, удаляем старую версию");
+        this.map.remove();
     }
+    
+    this.map = L.map('map', {
+        crs: L.CRS.Simple,
+        minZoom: -2,
+        maxZoom: 5,
+        zoomControl: false
+    });
+    
+    console.log("Новая карта создана:", this.map);
+}
 
     createLayers() {
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
@@ -267,6 +242,7 @@ window.onload = () => {
     
     window.app = app;
 };
+
 
 
 
