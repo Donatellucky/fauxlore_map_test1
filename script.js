@@ -66,7 +66,6 @@ init() {
         console.log("Основной слой загружен");
         this.map.fitBounds(bounds);
     });
-}
             // Проверка загрузки изображений
             this.layers.political.addTo(this.map).on('load', () => {
                 console.log("Основной слой загружен");
@@ -231,6 +230,7 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
 
 
 
