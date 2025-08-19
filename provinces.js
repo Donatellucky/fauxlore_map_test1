@@ -3,7 +3,7 @@ console.log('provinces.js loaded');
 class ProvinceSystem {
     constructor(map) {
         if (!map) {
-            console.error("Карта не найдена. Проверьте инициализацию.");
+            console.error("Карта не найдена.");
             return;
         }
         
@@ -11,10 +11,7 @@ class ProvinceSystem {
         this.provinces = {};
         this.highlighted = null;
         this.layer = L.layerGroup().addTo(map);
-        this.sidebar = null;
-        this.currentProvince = null;
         
-        // Загрузка данных
         const { provinces, config } = loadProvincesData();
         this.provincesData = provinces;
         this.config = config;
@@ -22,8 +19,6 @@ class ProvinceSystem {
 
     init() {
         this.loadProvinces();
-        this.createSidebar();
-        this.setupEventListeners();
         console.log("Система провинций инициализирована");
     }
 
@@ -36,7 +31,6 @@ class ProvinceSystem {
                 markers: this.createProvinceMarkers(id, province)
             };
         }
-        console.log(`Загружено ${Object.keys(this.provinces).length} провинций`);
     }
 
     createProvinceMarkers(id, province) {
@@ -80,7 +74,7 @@ class ProvinceSystem {
     }
 
     createMarker(coords, name, type, provinceId) {
-        const iconCfg = this.config.iconTypes[type] || this.config.iconTypes.city;
+        const iconCfg = this.config.iconTypes[type];
         const icon = L.divIcon({
             html: iconCfg.html,
             className: `province-marker ${iconCfg.className}`,
@@ -95,7 +89,9 @@ class ProvinceSystem {
             this.highlightProvince(provinceId);
         });
         
-        return marker;
+        return L.marker([coords[0], coords[1]], { icon })
+            .bindPopup(`<b>${name}</b><br>Провинция: ${this.provincesData[provinceId].name}`)
+            .addTo(this.layer);
     }
 
     createSidebar() {
@@ -221,18 +217,17 @@ class ProvinceSystem {
     }
 }
 
-// Автоматическая инициализация при загрузке
+// Отложенная инициализация
 function initProvinceSystem() {
     if (window.mapApp && window.mapApp.map) {
         window.provinceSystem = new ProvinceSystem(window.mapApp.map);
         window.provinceSystem.init();
     } else {
-        console.log("MapApp еще не загружен, повторная попытка через 500мс...");
-        setTimeout(initProvinceSystem, 500);
+        setTimeout(initProvinceSystem, 100);
     }
 }
 
-// Запуск инициализации
+// Запуск
 if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', initProvinceSystem);
 } else {
