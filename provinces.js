@@ -226,11 +226,6 @@ function initProvinceSystem() {
     if (window.mapApp && window.mapApp.map) {
         window.provinceSystem = new ProvinceSystem(window.mapApp.map);
         window.provinceSystem.init();
-    } else {
-        console.error("MapApp не найден. Проверьте порядок загрузки скриптов.");
-        // Повторная попытка через секунду
-        setTimeout(initProvinceSystem, 1000);
-    }
 }
 
 if (document.readyState === 'loading') {
