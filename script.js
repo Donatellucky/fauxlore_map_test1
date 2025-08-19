@@ -1,3 +1,4 @@
+console.log('script.js loaded');
 class MapApp {
     constructor() {
         this.activePanel = null;
@@ -22,6 +23,15 @@ init() {
     console.log("Карта инициализирована");
 }
 
+    if (typeof ProvinceSystem !== 'undefined') {
+        this.provinceSystem = new ProvinceSystem(this.map);
+        this.provinceSystem.init();
+    } else {
+        console.error("ProvinceSystem не загружен");
+    }
+    
+    console.log("Карта инициализирована");
+}
     createMap() {
         this.map = L.map('map', {
             crs: L.CRS.Simple,
@@ -221,6 +231,7 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
 
 
 
