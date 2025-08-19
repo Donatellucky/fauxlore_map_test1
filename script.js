@@ -23,12 +23,12 @@ init() {
     console.log("Карта инициализирована");
 }
 
-    if (typeof ProvinceSystem !== 'undefined') {
-        this.provinceSystem = new ProvinceSystem(this.map);
-        this.provinceSystem.init();
-    } else {
-        console.error("ProvinceSystem не загружен");
-    }
+   if (window.ProvinceSystem) {
+    this.provinceSystem = new ProvinceSystem(this.map);
+    this.provinceSystem.init();
+} else {
+    console.error("ProvinceSystem не загружен");
+}
     
     console.log("Карта инициализирована");
 }
@@ -230,6 +230,7 @@ window.onload = () => {
     // Для доступа из консоли
     window.app = app;
 };
+
 
 
 
