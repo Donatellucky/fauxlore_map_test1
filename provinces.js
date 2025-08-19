@@ -1,13 +1,14 @@
-constructor(map) {  // принимаем карту как параметр
-    if (!map) {
-        console.error("Карта не найдена.");
-        return;
+class ProvinceSystem {
+    constructor(map) {
+        if (!map) {
+            console.error("Карта не найдена.");
+            return;
+        }
+        this.map = map;
+        this.provinces = {};
+        this.highlighted = null;
+        this.layer = L.layerGroup().addTo(map);
     }
-    this.map = map;
-    this.provinces = {};
-    this.highlighted = null;
-    this.layer = L.layerGroup().addTo(map);
-}
 
     // Инициализация системы провинций
     init() {
@@ -140,15 +141,3 @@ highlightProvince(id, province) {
         `;
     }
 }
-
-// Инициализация при загрузке
-document.addEventListener('DOMContentLoaded', () => {
-    // Получаем ссылку на карту из основного приложения
-    const map = window.mapApp?.map;
-    if (map) {
-        window.provinceManager = new ProvinceManager(map);
-        window.provinceManager.init();
-    } else {
-        console.error("Карта не найдена. Убедитесь, что основной скрипт загружен.");
-    }
-});
