@@ -1,3 +1,4 @@
+console.log('provinces.js loaded');
 class ProvinceSystem {
     constructor(map) {
         if (!map) {
