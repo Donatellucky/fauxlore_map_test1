@@ -3,8 +3,8 @@ console.log('script.js loaded');
 class MapApp {
     constructor() {
         this.activePanel = null;
-        this.mapWidth = 2300;
-        this.mapHeight = 1500;
+        this.mapWidth = 3819;
+        this.mapHeight = 2455;
         this.map = null;
         this.layers = {};
         this.markerGroups = {
@@ -57,7 +57,12 @@ class MapApp {
             }),
             geographic: L.imageOverlay('img/newfaux.png', bounds, {
                 error: () => console.error('Ошибка загрузки географической карты')
-            })
+            }),
+            trade: L.imageOverlay('img/newfauxtrade.png', bounds, {
+                error: () => console.error('Ошибка загрузки торговой карты')
+            }),
+            resource: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds, {
+                error: () => console.error('Ошибка загрузки ресурсной карты')
         };
 
         // Добавляем политическую карту по умолчанию
@@ -103,6 +108,13 @@ class MapApp {
         
         document.getElementById('geographicBtn')?.addEventListener('click', () => {
             this.showLayer('geographic');
+        });
+
+        document.getElementById('tradeBtn')?.addEventListener('click', () => {
+            this.showLayer('trade');
+
+        document.getElementById('resourceBtn')?.addEventListener('click', () => {
+            this.showLayer('resource');
         });
 
         // Чекбоксы маркеров
@@ -169,4 +181,5 @@ window.onload = () => {
 
     new MapApp().init();
 };
+
 
