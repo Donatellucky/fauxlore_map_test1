@@ -63,7 +63,7 @@ class MapApp {
             }),
             resource: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds, {
                 error: () => console.error('Ошибка загрузки ресурсной карты')
-        };
+        }
 
         // Добавляем политическую карту по умолчанию
         this.layers.political.addTo(this.map);
@@ -181,5 +181,6 @@ window.onload = () => {
 
     new MapApp().init();
 };
+
 
 
