@@ -93,48 +93,49 @@ class MapApp {
         });
     }
 
-    setupUI() {
-        // Кнопки переключения слоев
-                document.getElementById('menuBtn')?.addEventListener('click', () => {
-            this.togglePanel('mainMenu');
-        });
-        
-        document.getElementById('markersBtn')?.addEventListener('click', () => {
-            this.togglePanel('markersMenu');
-        });
-        
-        document.getElementById('politicalBtn')?.addEventListener('click', () => {
-            this.showLayer('political');
-        });
-        
-        document.getElementById('geographicBtn')?.addEventListener('click', () => {
-            this.showLayer('geographic');
-        });
+   setupUI() {
+    // Кнопки переключения слоев
+    document.getElementById('menuBtn')?.addEventListener('click', () => {
+        this.togglePanel('mainMenu');
+    });
+    
+    document.getElementById('markersBtn')?.addEventListener('click', () => {
+        this.togglePanel('markersMenu');
+    });
+    
+    document.getElementById('politicalBtn')?.addEventListener('click', () => {
+        this.showLayer('political');
+    });
+    
+    document.getElementById('geographicBtn')?.addEventListener('click', () => {
+        this.showLayer('geographic');
+    });
 
-        document.getElementById('tradeBtn')?.addEventListener('click', () => {
-            this.showLayer('trade');
+    document.getElementById('tradeBtn')?.addEventListener('click', () => {
+        this.showLayer('trade');
+    }); // Закрывающая скобка для tradeBtn
 
-        document.getElementById('resourceBtn')?.addEventListener('click', () => {
-            this.showLayer('resource');
-        });
+    document.getElementById('resourceBtn')?.addEventListener('click', () => {
+        this.showLayer('resource');
+    });
 
-        // Чекбоксы маркеров
-        document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
-            this.toggleMarkers('capitals', e.target.checked);
-        });
-        
-        document.getElementById('togglePorts')?.addEventListener('change', (e) => {
-            this.toggleMarkers('ports', e.target.checked);
-        });
-                
-        // Закрытие при клике вне панели
-        document.addEventListener('click', (e) => {
-            if (!e.target.closest('.control-panel') && 
-                !e.target.closest('.control-content')) {
-                this.closeAllPanels();
-            }
-        });
-    }
+    // Чекбоксы маркеров
+    document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
+        this.toggleMarkers('capitals', e.target.checked);
+    });
+    
+    document.getElementById('togglePorts')?.addEventListener('change', (e) => {
+        this.toggleMarkers('ports', e.target.checked);
+    });
+            
+    // Закрытие при клике вне панели
+    document.addEventListener('click', (e) => {
+        if (!e.target.closest('.control-panel') && 
+            !e.target.closest('.control-content')) {
+            this.closeAllPanels();
+        }
+    });
+}
 
        togglePanel(panelId) {
         const panel = document.getElementById(panelId);
@@ -182,6 +183,7 @@ window.onload = () => {
 
     new MapApp().init();
 };
+
 
 
 
