@@ -184,6 +184,9 @@ window.onload = () => {
     new MapApp().init();
 };
 
+// В script.js, после создания карты
+const provinceSystem = new ProvinceSystem(map);
+provinceSystem.initSidebar();
 
 
 
