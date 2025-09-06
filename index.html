@@ -31,10 +31,21 @@
         </div>
     </div>
 
+<div id="province-sidebar" class="sidebar">
+    <div class="sidebar-header">
+        <h2>Провинции</h2>
+        <button id="close-sidebar">×</button>
+    </div>
+    <input type="text" id="province-search" placeholder="Поиск провинции...">
+    <div id="province-list"></div>
+</div>
+    
+<button id="open-sidebar">☰ Провинции</button>
     <!-- Подключаем Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <!-- Наш основной скрипт -->
     <script src="provinces-data.js"></script>
     <script src="script.js"></script>
     <script src="provinces.js"></script>
+
 
