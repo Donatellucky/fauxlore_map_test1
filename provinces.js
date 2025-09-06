@@ -228,6 +228,66 @@ class ProvinceSystem {
     }
 }
 
+// В класс ProvinceSystem добавим:
+initSidebar() {
+    // Обработчики для открытия/закрытия
+    document.getElementById('open-sidebar').addEventListener('click', () => {
+        document.getElementById('province-sidebar').style.width = '250px';
+    });
+    document.getElementById('close-sidebar').addEventListener('click', () => {
+        document.getElementById('province-sidebar').style.width = '0';
+    });
+
+    // Поиск
+    const searchInput = document.getElementById('province-search');
+    searchInput.addEventListener('input', () => {
+        this.filterProvinces(searchInput.value);
+    });
+
+    this.renderProvinceList();
+}
+
+renderProvinceList(filter = '') {
+    const listContainer = document.getElementById('province-list');
+    listContainer.innerHTML = '';
+    provincesData.features.forEach(feature => {
+        const name = feature.properties.name;
+        if (filter && !name.toLowerCase().includes(filter.toLowerCase())) return;
+
+        const item = document.createElement('div');
+        item.className = 'province-item';
+        item.textContent = `${feature.id}: ${name}`;
+        item.addEventListener('click', () => {
+            // При клике на элемент списка показываем провинцию на карте
+            this.highlightProvince(feature);
+            this.showProvinceInfo(feature.properties);
+        });
+        listContainer.appendChild(item);
+    });
+}
+
+filterProvinces(query) {
+    this.renderProvinceList(query);
+}
+
+highlightProvince(feature) {
+    // Убрать предыдущее выделение
+    if (this.highlighted) {
+        this.provincesLayer.resetStyle(this.highlighted);
+    }
+    // Найти слой провинции по id
+    this.provincesLayer.eachLayer(layer => {
+        if (layer.feature.id === feature.id) {
+            this.highlighted = layer;
+            layer.setStyle({
+                color: '#ff7800',
+                fillOpacity: 0.7
+            });
+            this.map.fitBounds(layer.getBounds());
+        }
+    });
+}
+
 // Отложенная инициализация
 function initProvinceSystem() {
     if (window.mapApp && window.mapApp.map) {
