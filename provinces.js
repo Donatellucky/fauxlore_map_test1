@@ -1,40 +1,51 @@
 console.log('provinces.js loaded');
 
+// province.js
 class ProvinceSystem {
     constructor(map) {
-        if (!map) {
-            console.error("Карта не найдена.");
-            return;
-        }
-        
         this.map = map;
-        this.provinces = {};
-        this.highlighted = null;
-        this.layer = L.layerGroup().addTo(map);
-        
-        const { provinces, config } = loadProvincesData();
-        this.provincesData = provinces;
-        this.config = config;
+        this.provincesLayer = L.geoJSON(provincesData, {
+            style: function(feature) {
+                return {
+                    fillColor: '#3388ff',
+                    weight: 2,
+                    opacity: 1,
+                    color: 'white',
+                    fillOpacity: 0.2
+                };
+            },
+            onEachFeature: (feature, layer) => {
+                layer.on({
+                    click: (e) => this.showProvinceInfo(feature.properties, e.latlng)
+                });
+            }
+        }).addTo(map);
+
+        this.infoPanel = L.control({position: 'topright'});
+        this.infoPanel.onAdd = function(map) {
+            this._div = L.DomUtil.create('div', 'province-info-panel');
+            this.update();
+            return this._div;
+        };
+        this.infoPanel.update = function(props) {
+            this._div.innerHTML = props ? 
+                `<h4>${props.name}</h4>
+                 <p>${props.description}</p>
+                 <p>Ресурс: ${props.resource}</p>
+                 <p>Религия: ${props.religion}</p>
+                 <p>Правительство: ${props.government}</p>
+                 <p>Раса: ${props.race}</p>
+                 <p>Статус: ${props.status}</p>
+                 <p>Постройки: ${props.buildings.join(', ')}</p>` : 'Нажмите на провинцию';
+        };
+        this.infoPanel.addTo(map);
     }
 
-    init() {
-        this.loadProvinces();
-        console.log("Система провинций инициализирована");
+    showProvinceInfo(props, latlng) {
+        this.infoPanel.update(props);
+        // Можно также открыть popup или сделать что-то еще
     }
-
-    loadProvinces() {
-        for (const id in this.provincesData) {
-            const province = this.provincesData[id];
-            this.provinces[id] = {
-                ...province,
-                color: this.getColorByType(province.type),
-                markers: this.createProvinceMarkers(id, province)
-            };
-        }
-    }
-
-    createProvinceMarkers(id, province) {
-        const markers = [];
+}
         
         // Маркер столицы
         if (province.capital) {
