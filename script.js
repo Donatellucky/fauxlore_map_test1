@@ -3,14 +3,13 @@ console.log('script.js loaded');
 class MapApp {
     constructor() {
         this.activePanel = null;
-        this.mapWidth = 3829;
-        this.mapHeight = 2455;
+        this.mapWidth = 2300;
+        this.mapHeight = 1500;
         this.map = null;
         this.layers = {};
         this.markerGroups = {};
         this.isMenuExpanded = false;
     }
-
 
     init() {
         this.createMap();
@@ -21,15 +20,6 @@ class MapApp {
     }
 
     createMap() {
-        // Проверяем наличие контейнера
-        const mapElement = document.getElementById('map');
-        if (!mapElement) {
-            console.error('Элемент #map не найден!');
-            return;
-        }
-
-        // Создаем карту
-    createMap() {
         this.map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -2,
@@ -38,17 +28,10 @@ class MapApp {
         });
     }
 
-        
-        // Устанавливаем границы
-        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
-        this.map.fitBounds(bounds);
-    }
-
     createLayers() {
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
-    
-    // Используем TileLayer для сохранения качества при масштабировании
-this.layers = {
+        
+        this.layers = {
             political: L.imageOverlay('img/newfauxpolit.png', bounds),
             geographic: L.imageOverlay('img/newfaux.png', bounds),
             resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds),
@@ -67,14 +50,14 @@ this.layers = {
             ports: L.layerGroup()
         };
 
-        const centerY = this.mapHeight/2;
-        const centerX = this.mapWidth/2;
+        const centerY = this.mapHeight / 2;
+        const centerX = this.mapWidth / 2;
         
         L.marker([centerY, centerX], {
             icon: L.divIcon({ html: '★', className: 'capital-icon' })
         }).bindPopup("Столица").addTo(this.markerGroups.capitals);
         
-        L.marker([centerY*1.2, centerX*0.8], {
+        L.marker([centerY * 1.2, centerX * 0.8], {
             icon: L.divIcon({ html: '⛵', className: 'port-icon' })
         }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
 
@@ -84,71 +67,69 @@ this.layers = {
     }
 
     setupUI() {
-        
-        // Добавляем все группы маркеров на карту
-// Основная кнопка меню
-        document.getElementById('mainMenuBtn')?.addEventListener('click', () => {
+        // Основная кнопка меню
+        this.addClickListener('mainMenuBtn', () => {
             this.toggleMainMenu();
         });
 
         // Кнопки управления
-        document.getElementById('layersBtn')?.addEventListener('click', () => {
+        this.addClickListener('layersBtn', () => {
             this.togglePanel('layersPanel');
         });
 
-        document.getElementById('markersBtn')?.addEventListener('click', () => {
+        this.addClickListener('markersBtn', () => {
             this.togglePanel('markersPanel');
         });
 
-        document.getElementById('searchBtn')?.addEventListener('click', () => {
+        this.addClickListener('searchBtn', () => {
             this.togglePanel('searchPanel');
         });
 
         // Кнопки масштабирования
-        document.getElementById('zoomInBtn')?.addEventListener('click', () => {
+        this.addClickListener('zoomInBtn', () => {
             this.map.zoomIn();
         });
 
-        document.getElementById('zoomOutBtn')?.addEventListener('click', () => {
+        this.addClickListener('zoomOutBtn', () => {
             this.map.zoomOut();
         });
 
         // Кнопки слоев
-        document.getElementById('politicalBtn')?.addEventListener('click', () => {
+        this.addClickListener('politicalBtn', () => {
             this.showLayer('political');
         });
 
-        document.getElementById('geographicBtn')?.addEventListener('click', () => {
+        this.addClickListener('geographicBtn', () => {
             this.showLayer('geographic');
         });
 
-        document.getElementById('resourcesBtn')?.addEventListener('click', () => {
+        this.addClickListener('resourcesBtn', () => {
             this.showLayer('resources');
         });
 
-        document.getElementById('tradeBtn')?.addEventListener('click', () => {
+        this.addClickListener('tradeBtn', () => {
             this.showLayer('trade');
         });
 
         // Чекбоксы маркеров
-        document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
+        this.addChangeListener('toggleCapitals', (e) => {
             this.toggleMarkers('capitals', e.target.checked);
         });
 
-        document.getElementById('toggleCities')?.addEventListener('change', (e) => {
+        this.addChangeListener('toggleCities', (e) => {
             this.toggleMarkers('cities', e.target.checked);
         });
 
-        document.getElementById('toggleFortresses')?.addEventListener('change', (e) => {
+        this.addChangeListener('toggleFortresses', (e) => {
             this.toggleMarkers('fortresses', e.target.checked);
         });
 
-        document.getElementById('togglePorts')?.addEventListener('change', (e) => {
+        this.addChangeListener('togglePorts', (e) => {
             this.toggleMarkers('ports', e.target.checked);
         });
 
         // Поиск
-        document.getElementById('executeSearch')?.addEventListener('click', () => {
+        this.addClickListener('executeSearch', () => {
             this.searchMarker();
         });
 
@@ -165,20 +146,40 @@ this.layers = {
         }).addTo(this.map);
     }
 
+    addClickListener(id, handler) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('click', handler);
+        } else {
+            console.warn('Элемент не найден:', id);
+        }
+    }
+
+    addChangeListener(id, handler) {
+        const element = document.getElementById(id);
+        if (element) {
+            element.addEventListener('change', handler);
+        } else {
+            console.warn('Элемент не найден:', id);
+        }
+    }
+
     toggleMainMenu() {
         this.isMenuExpanded = !this.isMenuExpanded;
         const buttons = document.querySelector('.control-buttons');
         const mainBtn = document.getElementById('mainMenuBtn');
         
-        if (this.isMenuExpanded) {
-            buttons.style.display = 'flex';
-            mainBtn.innerHTML = '✕';
-            mainBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
-        } else {
-            buttons.style.display = 'none';
-            mainBtn.innerHTML = '☰';
-            mainBtn.style.background = 'linear-gradient(135deg, #4a6ea9, #3a5a8f)';
-            this.closeAllPanels();
+        if (buttons && mainBtn) {
+            if (this.isMenuExpanded) {
+                buttons.style.display = 'flex';
+                mainBtn.innerHTML = '✕';
+                mainBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+            } else {
+                buttons.style.display = 'none';
+                mainBtn.innerHTML = '☰';
+                mainBtn.style.background = 'linear-gradient(135deg, #4a6ea9, #3a5a8f)';
+                this.closeAllPanels();
+            }
         }
     }
 
@@ -243,18 +244,14 @@ this.layers = {
 }
 
 // Инициализация после полной загрузки страницы
-window.onload = () => {
+document.addEventListener('DOMContentLoaded', function() {
     console.log("Страница загружена, инициализируем карту...");
     const app = new MapApp();
     app.init();
     
     // Для доступа из консоли
     window.app = app;
-};
-
-// В script.js, после создания карты
-const provinceSystem = new ProvinceSystem(map);
-provinceSystem.initSidebar();
+});
 
 
 
