@@ -47,24 +47,40 @@ class MapApp {
         this.map.fitBounds(bounds);
     }
 
-    createBaseLayers() {
-        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
-        
-        // Основные слои
-        this.layers = {
-            political: L.imageOverlay('img/newfauxpolit.png', bounds, {
-                error: () => console.error('Ошибка загрузки политической карты')
-            }),
-            geographic: L.imageOverlay('img/newfaux.png', bounds, {
-                error: () => console.error('Ошибка загрузки географической карты')
-            }),
-            trade: L.imageOverlay('img/newfauxtrade.png', bounds, {
-                error: () => console.error('Ошибка загрузки торговой карты')
-            }),
-            resource: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds, {
-                error: () => console.error('Ошибка загрузки ресурсной карты')
+    createLayers() {
+    const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
+    
+    // Используем TileLayer для сохранения качества при масштабировании
+    this.layers = {
+        political: L.tileLayer('img/newfauxpolit.png', {
+            bounds: bounds,
+            noWrap: true,
+            continuousWorld: false,
+            tileSize: 512, // Увеличиваем размер тайлов для лучшего качества
+            zoomOffset: -1 // Корректировка масштабирования
+        }),
+        geographic: L.tileLayer('img/newfaux.png', {
+            bounds: bounds,
+            noWrap: true,
+            continuousWorld: false,
+            tileSize: 512
+        }),
+        resources: L.tileLayer('img/newfauxresource_actual_hod_0.png', {
+            bounds: bounds,
+            noWrap: true,
+            continuousWorld: false,
+            tileSize: 512
+        }),
+        trade: L.tileLayer('img/newfauxtrade.png', {
+            bounds: bounds,
+            noWrap: true,
+            continuousWorld: false,
+            tileSize: 512
         })
     };
+    
+    this.layers.political.addTo(this.map);
+    this.map.fitBounds(bounds);
 
         // Добавляем политическую карту по умолчанию
         this.layers.political.addTo(this.map);
@@ -187,6 +203,7 @@ window.onload = () => {
 // В script.js, после создания карты
 const provinceSystem = new ProvinceSystem(map);
 provinceSystem.initSidebar();
+
 
 
 
