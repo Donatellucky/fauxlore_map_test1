@@ -37,6 +37,7 @@ class MapApp {
             zoomControl: false
         });
     }
+
         
         // Устанавливаем границы
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
@@ -254,6 +255,7 @@ window.onload = () => {
 // В script.js, после создания карты
 const provinceSystem = new ProvinceSystem(map);
 provinceSystem.initSidebar();
+
 
 
 
