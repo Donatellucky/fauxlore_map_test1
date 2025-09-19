@@ -1,51 +1,69 @@
 <!DOCTYPE html>
-<html lang="ru">
+<html>
 <head>
-    <meta charset="UTF-8">
+    <title>Fauxlore Map</title>
+    <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fauxlore - Интерактивная карта</title>
-    <!-- Leaflet CSS -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
     <link rel="stylesheet" href="style.css" />
     <!-- Наши стили -->
 </head>
 <body>
+    
     <!-- Основной контейнер карты -->
-    <div id="map"></div>
+    <<div id="map"></div>
     
     <!-- Панель управления -->
     <div class="control-panel">
-        <button id="menuBtn" class="control-btn">☰ Меню</button>
+        <button class="menu-main-btn" id="mainMenuBtn">☰</button>
         
-        <div id="mainMenu" class="control-content">
-            <button id="politicalBtn" class="control-btn">🗺️ Политическая</button>
-            <button id="geographicBtn" class="control-btn">🌍 Географическая</button>
-            <button id="tradeBtn" class="control-btn">Торговая</button>
-            <button id="resourceBtn" class="control-btn">Ресурсы</button>
+        <div class="control-buttons">
+            <button class="control-btn" id="layersBtn">
+                <span class="btn-icon">🗺️</span> Слои
+            </button>
+            
+            <button class="control-btn" id="markersBtn">
+                <span class="btn-icon">📍</span> Маркеры
+            </button>
+            
+            <button class="control-btn" id="searchBtn">
+                <span class="btn-icon">🔍</span> Поиск
+            </button>
+            
+            <button class="control-btn" id="zoomInBtn">
+                <span class="btn-icon">➕</span> Увеличить
+            </button>
+            <button class="control-btn" id="zoomOutBtn">
+                <span class="btn-icon">➖</span> Уменьшить
+            </button>
+        </div>
+        <div id="layersPanel" class="control-content">
+            <button id="politicalBtn">🗺️ Политическая</button>
+            <button id="geographicBtn">🌍 Географическая</button>
+            <button id="resourcesBtn">⛏️ Ресурсы</button>
+            <button id="tradeBtn">💰 Торговля</button>
         </div>
         
-        <button id="markersBtn" class="control-btn">📍 Маркеры</button>
-        <div id="markersMenu" class="control-content">
+        <div id="markersPanel" class="control-content">
             <label><input type="checkbox" id="toggleCapitals" checked> Столицы</label>
+            <label><input type="checkbox" id="toggleCities" checked> Города</label>
+            <label><input type="checkbox" id="toggleFortresses" checked> Крепости</label>
             <label><input type="checkbox" id="togglePorts" checked> Порты</label>
         </div>
-    </div>
 
-<div id="province-sidebar" class="sidebar">
-    <div class="sidebar-header">
-        <h2>Провинции</h2>
-        <button id="close-sidebar">×</button>
+<div id="searchPanel" class="control-content">
+            <input type="text" id="markerSearch" placeholder="Введите название">
+            <button id="executeSearch">Найти</button>
+        </div>
     </div>
-    <input type="text" id="province-search" placeholder="Поиск провинции...">
-    <div id="province-list"></div>
-</div>
     
 <button id="open-sidebar">☰ Провинции</button>
     <!-- Подключаем Leaflet JS -->
-    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
-    <!-- Наш основной скрипт -->
-    <script src="provinces-data.js"></script>
+<script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
     <script src="script.js"></script>
     <script src="provinces.js"></script>
+</body>
+</html>
+
 
 
