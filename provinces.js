@@ -2,7 +2,16 @@ console.log('provinces.js loaded');
 
 // province.js
 class ProvinceSystem {
-    constructor(map) {
+    constructor() {
+        console.log("Система провинций загружена");
+        // Временная заглушка, полная реализация будет позже
+    }
+
+    init() {
+        console.log("Инициализация системы провинций");
+        // Временная заглушка
+    }
+}
         this.map = map;
         this.provincesLayer = L.geoJSON(provincesData, {
             style: function(feature) {
@@ -289,14 +298,14 @@ highlightProvince(feature) {
 }
 
 // Отложенная инициализация
-function initProvinceSystem() {
-    if (window.mapApp && window.mapApp.map) {
-        window.provinceSystem = new ProvinceSystem(window.mapApp.map);
-        window.provinceSystem.init();
+setTimeout(() => {
+    if (window.app && window.app.map) {
+        window.provinceManager = new ProvinceSystem();
+        window.provinceManager.init();
     } else {
-        setTimeout(initProvinceSystem, 100);
+        console.log("Карта еще не готова для системы провинций");
     }
-}
+}, 1000);
 
 // Запуск
 if (document.readyState === 'loading') {
