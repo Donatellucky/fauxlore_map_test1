@@ -3,27 +3,21 @@ console.log('script.js loaded');
 class MapApp {
     constructor() {
         this.activePanel = null;
-        this.mapWidth = 3819;
+        this.mapWidth = 3829;
         this.mapHeight = 2455;
         this.map = null;
         this.layers = {};
-        this.markerGroups = {
-            capitals: L.layerGroup(),
-            cities: L.layerGroup(),
-            fortresses: L.layerGroup(),
-            ports: L.layerGroup()
-        };
+        this.markerGroups = {};
+        this.isMenuExpanded = false;
     }
 
 
     init() {
         this.createMap();
-        this.createBaseLayers();
+        this.createLayers();
         this.createMarkers();
         this.setupUI();
-        
-        console.log("Карта успешно инициализирована");
-        window.mapApp = this;
+        console.log("Карта инициализирована");
     }
 
     createMap() {
@@ -35,12 +29,14 @@ class MapApp {
         }
 
         // Создаем карту
+    createMap() {
         this.map = L.map('map', {
             crs: L.CRS.Simple,
             minZoom: -2,
             maxZoom: 5,
             zoomControl: false
         });
+    }
         
         // Устанавливаем границы
         const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
@@ -48,112 +44,144 @@ class MapApp {
     }
 
     createLayers() {
-    const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
+        const bounds = [[0, 0], [this.mapHeight, this.mapWidth]];
     
     // Используем TileLayer для сохранения качества при масштабировании
-    this.layers = {
-        political: L.tileLayer('img/newfauxpolit.png', {
-            bounds: bounds,
-            noWrap: true,
-            continuousWorld: false,
-            tileSize: 512, // Увеличиваем размер тайлов для лучшего качества
-            zoomOffset: -1 // Корректировка масштабирования
-        }),
-        geographic: L.tileLayer('img/newfaux.png', {
-            bounds: bounds,
-            noWrap: true,
-            continuousWorld: false,
-            tileSize: 512
-        }),
-        resources: L.tileLayer('img/newfauxresource_actual_hod_0.png', {
-            bounds: bounds,
-            noWrap: true,
-            continuousWorld: false,
-            tileSize: 512
-        }),
-        trade: L.tileLayer('img/newfauxtrade.png', {
-            bounds: bounds,
-            noWrap: true,
-            continuousWorld: false,
-            tileSize: 512
-        })
-    };
-    
-    this.layers.political.addTo(this.map);
-    this.map.fitBounds(bounds);
-
-        // Добавляем политическую карту по умолчанию
+this.layers = {
+            political: L.imageOverlay('img/newfauxpolit.png', bounds),
+            geographic: L.imageOverlay('img/newfaux.png', bounds),
+            resources: L.imageOverlay('img/newfauxresource_actual_hod_0.png', bounds),
+            trade: L.imageOverlay('img/newfauxtrade.png', bounds)
+        };
+        
         this.layers.political.addTo(this.map);
+        this.map.fitBounds(bounds);
     }
 
     createMarkers() {
-        const centerY = this.mapHeight / 2;
-        const centerX = this.mapWidth / 2;
+        this.markerGroups = {
+            capitals: L.layerGroup(),
+            cities: L.layerGroup(),
+            fortresses: L.layerGroup(),
+            ports: L.layerGroup()
+        };
 
-        // Тестовые маркеры
+        const centerY = this.mapHeight/2;
+        const centerX = this.mapWidth/2;
+        
         L.marker([centerY, centerX], {
             icon: L.divIcon({ html: '★', className: 'capital-icon' })
-        })
-        .bindPopup("Столица")
-        .addTo(this.markerGroups.capitals);
-
-        L.marker([centerY * 1.2, centerX * 0.8], {
+        }).bindPopup("Столица").addTo(this.markerGroups.capitals);
+        
+        L.marker([centerY*1.2, centerX*0.8], {
             icon: L.divIcon({ html: '⛵', className: 'port-icon' })
-        })
-        .bindPopup("Главный порт")
-        .addTo(this.markerGroups.ports);
+        }).bindPopup("Главный порт").addTo(this.markerGroups.ports);
 
-        // Добавляем все группы маркеров на карту
         Object.values(this.markerGroups).forEach(group => {
             group.addTo(this.map);
         });
     }
 
-   setupUI() {
-    // Кнопки переключения слоев
-    document.getElementById('menuBtn')?.addEventListener('click', () => {
-        this.togglePanel('mainMenu');
-    });
-    
-    document.getElementById('markersBtn')?.addEventListener('click', () => {
-        this.togglePanel('markersMenu');
-    });
-    
-    document.getElementById('politicalBtn')?.addEventListener('click', () => {
-        this.showLayer('political');
-    });
-    
-    document.getElementById('geographicBtn')?.addEventListener('click', () => {
-        this.showLayer('geographic');
-    });
+    setupUI() {
+        
+        // Добавляем все группы маркеров на карту
+// Основная кнопка меню
+        document.getElementById('mainMenuBtn')?.addEventListener('click', () => {
+            this.toggleMainMenu();
+        });
 
-    document.getElementById('tradeBtn')?.addEventListener('click', () => {
-        this.showLayer('trade');
-    }); // Закрывающая скобка для tradeBtn
+        // Кнопки управления
+        document.getElementById('layersBtn')?.addEventListener('click', () => {
+            this.togglePanel('layersPanel');
+        });
 
-    document.getElementById('resourceBtn')?.addEventListener('click', () => {
-        this.showLayer('resource');
-    });
+        document.getElementById('markersBtn')?.addEventListener('click', () => {
+            this.togglePanel('markersPanel');
+        });
 
-    // Чекбоксы маркеров
-    document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
-        this.toggleMarkers('capitals', e.target.checked);
-    });
-    
-    document.getElementById('togglePorts')?.addEventListener('change', (e) => {
-        this.toggleMarkers('ports', e.target.checked);
-    });
-            
-    // Закрытие при клике вне панели
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.control-panel') && 
-            !e.target.closest('.control-content')) {
+        document.getElementById('searchBtn')?.addEventListener('click', () => {
+            this.togglePanel('searchPanel');
+        });
+
+        // Кнопки масштабирования
+        document.getElementById('zoomInBtn')?.addEventListener('click', () => {
+            this.map.zoomIn();
+        });
+
+        document.getElementById('zoomOutBtn')?.addEventListener('click', () => {
+            this.map.zoomOut();
+        });
+
+        // Кнопки слоев
+        document.getElementById('politicalBtn')?.addEventListener('click', () => {
+            this.showLayer('political');
+        });
+
+        document.getElementById('geographicBtn')?.addEventListener('click', () => {
+            this.showLayer('geographic');
+        });
+
+        document.getElementById('resourcesBtn')?.addEventListener('click', () => {
+            this.showLayer('resources');
+        });
+
+        document.getElementById('tradeBtn')?.addEventListener('click', () => {
+            this.showLayer('trade');
+        });
+
+        // Чекбоксы маркеров
+        document.getElementById('toggleCapitals')?.addEventListener('change', (e) => {
+            this.toggleMarkers('capitals', e.target.checked);
+        });
+
+        document.getElementById('toggleCities')?.addEventListener('change', (e) => {
+            this.toggleMarkers('cities', e.target.checked);
+        });
+
+        document.getElementById('toggleFortresses')?.addEventListener('change', (e) => {
+            this.toggleMarkers('fortresses', e.target.checked);
+        });
+
+        document.getElementById('togglePorts')?.addEventListener('change', (e) => {
+            this.toggleMarkers('ports', e.target.checked);
+        });
+
+        // Поиск
+        document.getElementById('executeSearch')?.addEventListener('click', () => {
+            this.searchMarker();
+        });
+
+        // Закрытие при клике вне панели
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.control-panel')) {
+                this.closeAllPanels();
+            }
+        });
+
+        // Добавляем стандартные контролы масштабирования
+        L.control.zoom({
+            position: 'bottomright'
+        }).addTo(this.map);
+    }
+
+    toggleMainMenu() {
+        this.isMenuExpanded = !this.isMenuExpanded;
+        const buttons = document.querySelector('.control-buttons');
+        const mainBtn = document.getElementById('mainMenuBtn');
+        
+        if (this.isMenuExpanded) {
+            buttons.style.display = 'flex';
+            mainBtn.innerHTML = '✕';
+            mainBtn.style.background = 'linear-gradient(135deg, #e74c3c, #c0392b)';
+        } else {
+            buttons.style.display = 'none';
+            mainBtn.innerHTML = '☰';
+            mainBtn.style.background = 'linear-gradient(135deg, #4a6ea9, #3a5a8f)';
             this.closeAllPanels();
         }
-    });
-}
+    }
 
-       togglePanel(panelId) {
+    togglePanel(panelId) {
         const panel = document.getElementById(panelId);
         if (!panel) return;
 
@@ -173,36 +201,60 @@ class MapApp {
         });
         this.activePanel = null;
     }
-    
-    showLayer(layerName) {
-        if (!this.layers[layerName]) return;
 
-        Object.values(this.layers).forEach(layer => layer.remove());
+    showLayer(layerName) {
+        if (!this.layers[layerName]) {
+            console.error("Слой не найден:", layerName);
+            return;
+        }
+
+        Object.values(this.layers).forEach(layer => {
+            if (layer) layer.remove();
+        });
+        
         this.layers[layerName].addTo(this.map);
+        this.closeAllPanels();
     }
 
     toggleMarkers(markerType, isChecked) {
-        if (!this.markerGroups[markerType]) return;
+        if (!this.markerGroups[markerType]) {
+            console.error("Группа маркеров не найдена:", markerType);
+            return;
+        }
 
-        isChecked ? 
-            this.map.addLayer(this.markerGroups[markerType]) : 
+        if (isChecked) {
+            this.map.addLayer(this.markerGroups[markerType]);
+        } else {
             this.map.removeLayer(this.markerGroups[markerType]);
+        }
+    }
+
+    searchMarker() {
+        const searchInput = document.getElementById('markerSearch');
+        if (!searchInput) {
+            console.error("Поле поиска не найдено");
+            return;
+        }
+        
+        console.log('Поиск:', searchInput.value);
+        this.closeAllPanels();
     }
 }
 
-// Инициализация при загрузке страницы
+// Инициализация после полной загрузки страницы
 window.onload = () => {
-    if (typeof L === 'undefined') {
-        console.error('Leaflet не загружен!');
-        return;
-    }
-
-    new MapApp().init();
+    console.log("Страница загружена, инициализируем карту...");
+    const app = new MapApp();
+    app.init();
+    
+    // Для доступа из консоли
+    window.app = app;
 };
 
 // В script.js, после создания карты
 const provinceSystem = new ProvinceSystem(map);
 provinceSystem.initSidebar();
+
 
 
 
