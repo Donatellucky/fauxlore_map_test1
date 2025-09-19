@@ -238,7 +238,19 @@ body, html {
     padding: 2px 5px !important;
 }
 
+/* Улучшение качества отображения карты */
 .leaflet-container {
-    background: #e0e0e0 !important;
+    image-rendering: -webkit-optimize-contrast;
+    image-rendering: crisp-edges;
 }
+
+.leaflet-image-layer {
+    image-rendering: crisp-edges;
+}
+
+/* Предотвращение размытия при масштабировании */
+.leaflet-zoom-animated {
+    image-rendering: optimizeQuality;
+}
+
 
