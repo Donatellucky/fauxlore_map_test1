@@ -36,7 +36,7 @@ class ProvinceSystem {
             this.update();
             return this._div;
         };
-        this.infoPanel.update = function(props) {
+        this.infoPanel.update = function(props) {{
             this._div.innerHTML = props ? 
                 `<h4>${props.name}</h4>
                  <p>${props.description}</p>
