@@ -3,8 +3,8 @@ console.log('script.js loaded');
 class MapApp {
     constructor() {
         this.activePanel = null;
-        this.mapWidth = 2300;
-        this.mapHeight = 1500;
+        this.mapWidth = 3819;
+        this.mapHeight = 2455;
         this.map = null;
         this.layers = {};
         this.markerGroups = {};
@@ -252,6 +252,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Для доступа из консоли
     window.app = app;
 });
+
 
 
 
